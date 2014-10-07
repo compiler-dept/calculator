@@ -12,14 +12,35 @@
 }
 
 %token_type {char*}
+%type list {
+    struct {
+        int size;
+        char** elems;
+    }
+}
 
-start ::= list(A) . { printf("[%s]\n", A); free(A); }
+start ::= list(A) . 
+{   
+    for (int i = 0; i<A.size; i++){
+        printf("Element %i: %s\n", i, A.elems[i]);
+    }
+    free(A.elems); 
+}
 
 list(A) ::= WORD(B) COMMA list(C) . 
 {
-    A = malloc(strlen(B)+strlen(C)+3); 
-    strcat(A, B); 
-    strcat(A, ", "); 
-    strcat(A, C);
+    A.size = C.size + 1;
+    A.elems = malloc((A.size) * sizeof(char*));
+    A.elems[0] = B;
+    for (int i = 1; i<A.size; i++){
+        A.elems[i] = C.elems[i-1];
+    }
+    free(C.elems);
 }
-list(A) ::= WORD(B) . { A = B; }
+
+list(A) ::= WORD(B) . 
+{ 
+    A.size = 1;
+    A.elems = malloc(sizeof(char*));
+    A.elems[0] = B;
+}

@@ -67,6 +67,10 @@
 typedef union {
   int yyinit;
   ParseTOKENTYPE yy0;
+  struct {
+        int size;
+        char** elems;
+    } yy4;
 } YYMINORTYPE;
 #ifndef YYSTACKDEPTH
 #define YYSTACKDEPTH 100
@@ -147,10 +151,10 @@ static const YYMINORTYPE yyzerominor = { 0 };
 */
 #define YY_ACTTAB_COUNT (6)
 static const YYACTIONTYPE yy_action[] = {
- /*     0 */     9,    3,    5,    1,    4,    2,
+ /*     0 */     3,    9,    5,    1,    4,    2,
 };
 static const YYCODETYPE yy_lookahead[] = {
- /*     0 */     4,    5,    0,    2,    5,    1,
+ /*     0 */     4,    5,    0,    2,    4,    1,
 };
 #define YY_SHIFT_USE_DFLT (-1)
 #define YY_SHIFT_COUNT (3)
@@ -164,7 +168,7 @@ static const signed char yy_shift_ofst[] = {
 #define YY_REDUCE_MIN   (-4)
 #define YY_REDUCE_MAX   (0)
 static const signed char yy_reduce_ofst[] = {
- /*     0 */    -4,   -1,
+ /*     0 */    -4,    0,
 };
 static const YYACTIONTYPE yy_default[] = {
  /*     0 */     8,    8,    7,    8,    6,
@@ -261,7 +265,7 @@ void ParseTrace(FILE *TraceFILE, char *zTracePrompt){
 ** are required.  The following table supplies these names */
 static const char *const yyTokenName[] = { 
   "$",             "WORD",          "COMMA",         "error",       
-  "start",         "list",        
+  "list",          "start",       
 };
 #endif /* NDEBUG */
 
@@ -585,9 +589,9 @@ static const struct {
   YYCODETYPE lhs;         /* Symbol on the left-hand side of the rule */
   unsigned char nrhs;     /* Number of right-hand side symbols in the rule */
 } yyRuleInfo[] = {
-  { 4, 1 },
-  { 5, 3 },
   { 5, 1 },
+  { 4, 3 },
+  { 4, 1 },
 };
 
 static void yy_accept(yyParser*);  /* Forward Declaration */
@@ -643,24 +647,36 @@ static void yy_reduce(
   **     break;
   */
       case 0: /* start ::= list */
-#line 16 "list.y"
-{ printf("[%s]\n", yymsp[0].minor.yy0); free(yymsp[0].minor.yy0); }
-#line 649 "list.c"
+#line 23 "list.y"
+{   
+    for (int i = 0; i<yymsp[0].minor.yy4.size; i++){
+        printf("Element %i: %s\n", i, yymsp[0].minor.yy4.elems[i]);
+    }
+    free(yymsp[0].minor.yy4.elems); 
+}
+#line 655 "list.c"
         break;
       case 1: /* list ::= WORD COMMA list */
-#line 19 "list.y"
+#line 31 "list.y"
 {
-    yygotominor.yy0 = malloc(strlen(yymsp[-2].minor.yy0)+strlen(yymsp[0].minor.yy0)+3); 
-    strcat(yygotominor.yy0, yymsp[-2].minor.yy0); 
-    strcat(yygotominor.yy0, ", "); 
-    strcat(yygotominor.yy0, yymsp[0].minor.yy0);
+    yygotominor.yy4.size = yymsp[0].minor.yy4.size + 1;
+    yygotominor.yy4.elems = malloc((yygotominor.yy4.size) * sizeof(char*));
+    yygotominor.yy4.elems[0] = yymsp[-2].minor.yy0;
+    for (int i = 1; i<yygotominor.yy4.size; i++){
+        yygotominor.yy4.elems[i] = yymsp[0].minor.yy4.elems[i-1];
+    }
+    free(yymsp[0].minor.yy4.elems);
 }
-#line 659 "list.c"
+#line 668 "list.c"
         break;
       case 2: /* list ::= WORD */
-#line 25 "list.y"
-{ yygotominor.yy0 = yymsp[0].minor.yy0; }
-#line 664 "list.c"
+#line 42 "list.y"
+{ 
+    yygotominor.yy4.size = 1;
+    yygotominor.yy4.elems = malloc(sizeof(char*));
+    yygotominor.yy4.elems[0] = yymsp[0].minor.yy0;
+}
+#line 677 "list.c"
         break;
       default:
         break;
@@ -725,7 +741,7 @@ static void yy_syntax_error(
 #line 10 "list.y"
 
     puts("Error parsing input.\n");
-#line 729 "list.c"
+#line 742 "list.c"
   ParseARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
 

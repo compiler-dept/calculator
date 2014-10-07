@@ -1,4 +1,4 @@
-CFLAGS = -Wall -g
+CFLAGS = -Wall -g -std=c99
 
 all: main.o list.o
 	$(CC) $(CFLAGS) -o main main.o list.o
