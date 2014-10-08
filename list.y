@@ -4,6 +4,7 @@
     #include <string.h>
     #include <assert.h>
     #include <stdlib.h>
+    #include "lexer.h"
 }
 
 %syntax_error
@@ -11,7 +12,7 @@
     puts("Error parsing input.\n");
 }
 
-%token_type {char*}
+%token_type {struct token*}
 %type list {
     struct {
         int size;
@@ -31,7 +32,7 @@ list(A) ::= WORD(B) COMMA list(C) .
 {
     A.size = C.size + 1;
     A.elems = malloc((A.size) * sizeof(char*));
-    A.elems[0] = B;
+    A.elems[0] = B->text;
     for (int i = 1; i<A.size; i++){
         A.elems[i] = C.elems[i-1];
     }
@@ -42,5 +43,5 @@ list(A) ::= WORD(B) .
 { 
     A.size = 1;
     A.elems = malloc(sizeof(char*));
-    A.elems[0] = B;
+    A.elems[0] = B->text;
 }

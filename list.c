@@ -10,7 +10,8 @@
     #include <string.h>
     #include <assert.h>
     #include <stdlib.h>
-#line 14 "list.c"
+    #include "lexer.h"
+#line 15 "list.c"
 /* Next is all token values, in a form suitable for use by makeheaders.
 ** This section will be null unless lemon is run with the -m switch.
 */
@@ -63,7 +64,7 @@
 #define YYCODETYPE unsigned char
 #define YYNOCODE 7
 #define YYACTIONTYPE unsigned char
-#define ParseTOKENTYPE char*
+#define ParseTOKENTYPE struct token*
 typedef union {
   int yyinit;
   ParseTOKENTYPE yy0;
@@ -647,36 +648,36 @@ static void yy_reduce(
   **     break;
   */
       case 0: /* start ::= list */
-#line 23 "list.y"
+#line 24 "list.y"
 {   
     for (int i = 0; i<yymsp[0].minor.yy4.size; i++){
         printf("Element %i: %s\n", i, yymsp[0].minor.yy4.elems[i]);
     }
     free(yymsp[0].minor.yy4.elems); 
 }
-#line 655 "list.c"
+#line 656 "list.c"
         break;
       case 1: /* list ::= WORD COMMA list */
-#line 31 "list.y"
+#line 32 "list.y"
 {
     yygotominor.yy4.size = yymsp[0].minor.yy4.size + 1;
     yygotominor.yy4.elems = malloc((yygotominor.yy4.size) * sizeof(char*));
-    yygotominor.yy4.elems[0] = yymsp[-2].minor.yy0;
+    yygotominor.yy4.elems[0] = yymsp[-2].minor.yy0->text;
     for (int i = 1; i<yygotominor.yy4.size; i++){
         yygotominor.yy4.elems[i] = yymsp[0].minor.yy4.elems[i-1];
     }
     free(yymsp[0].minor.yy4.elems);
 }
-#line 668 "list.c"
+#line 669 "list.c"
         break;
       case 2: /* list ::= WORD */
-#line 42 "list.y"
+#line 43 "list.y"
 { 
     yygotominor.yy4.size = 1;
     yygotominor.yy4.elems = malloc(sizeof(char*));
-    yygotominor.yy4.elems[0] = yymsp[0].minor.yy0;
+    yygotominor.yy4.elems[0] = yymsp[0].minor.yy0->text;
 }
-#line 677 "list.c"
+#line 678 "list.c"
         break;
       default:
         break;
@@ -738,10 +739,10 @@ static void yy_syntax_error(
 ){
   ParseARG_FETCH;
 #define TOKEN (yyminor.yy0)
-#line 10 "list.y"
+#line 11 "list.y"
 
     puts("Error parsing input.\n");
-#line 742 "list.c"
+#line 743 "list.c"
   ParseARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
 
