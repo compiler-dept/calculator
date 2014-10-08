@@ -70,8 +70,8 @@ typedef union {
   ParseTOKENTYPE yy0;
   struct {
         int size;
-        char** elems;
-    } yy4;
+        struct token** elems;
+    } yy8;
 } YYMINORTYPE;
 #ifndef YYSTACKDEPTH
 #define YYSTACKDEPTH 100
@@ -265,7 +265,7 @@ void ParseTrace(FILE *TraceFILE, char *zTracePrompt){
 /* For tracing shifts, the names of all terminals and nonterminals
 ** are required.  The following table supplies these names */
 static const char *const yyTokenName[] = { 
-  "$",             "WORD",          "COMMA",         "error",       
+  "$",             "TEXT",          "COMMA",         "error",       
   "list",          "start",       
 };
 #endif /* NDEBUG */
@@ -275,8 +275,8 @@ static const char *const yyTokenName[] = {
 */
 static const char *const yyRuleName[] = {
  /*   0 */ "start ::= list",
- /*   1 */ "list ::= WORD COMMA list",
- /*   2 */ "list ::= WORD",
+ /*   1 */ "list ::= TEXT COMMA list",
+ /*   2 */ "list ::= TEXT",
 };
 #endif /* NDEBUG */
 
@@ -355,6 +355,15 @@ static void yy_destructor(
     ** which appear on the RHS of the rule, but which are not used
     ** inside the C code.
     */
+      /* TERMINAL Destructor */
+    case 1: /* TEXT */
+    case 2: /* COMMA */
+{
+#line 16 "list.y"
+ free_token((yypminor->yy0)); 
+#line 362 "list.c"
+}
+      break;
     default:  break;   /* If no destructor action specified: do nothing */
   }
 }
@@ -648,36 +657,39 @@ static void yy_reduce(
   **     break;
   */
       case 0: /* start ::= list */
-#line 24 "list.y"
+#line 26 "list.y"
 {   
-    for (int i = 0; i<yymsp[0].minor.yy4.size; i++){
-        printf("Element %i: %s\n", i, yymsp[0].minor.yy4.elems[i]);
+    for (int i = 0; i<yymsp[0].minor.yy8.size; i++){
+        printf("Element %i: %s\n", i, yymsp[0].minor.yy8.elems[i]->text);
+        free_token(yymsp[0].minor.yy8.elems[i]);
     }
-    free(yymsp[0].minor.yy4.elems); 
+    free(yymsp[0].minor.yy8.elems); 
 }
-#line 656 "list.c"
+#line 666 "list.c"
         break;
-      case 1: /* list ::= WORD COMMA list */
-#line 32 "list.y"
+      case 1: /* list ::= TEXT COMMA list */
+#line 35 "list.y"
 {
-    yygotominor.yy4.size = yymsp[0].minor.yy4.size + 1;
-    yygotominor.yy4.elems = malloc((yygotominor.yy4.size) * sizeof(char*));
-    yygotominor.yy4.elems[0] = yymsp[-2].minor.yy0->text;
-    for (int i = 1; i<yygotominor.yy4.size; i++){
-        yygotominor.yy4.elems[i] = yymsp[0].minor.yy4.elems[i-1];
+    yygotominor.yy8.size = yymsp[0].minor.yy8.size + 1;
+    yygotominor.yy8.elems = malloc((yygotominor.yy8.size) * sizeof(struct token));
+    yygotominor.yy8.elems[0] = yymsp[-2].minor.yy0;
+
+    for (int i = 1; i<yygotominor.yy8.size; i++){
+        yygotominor.yy8.elems[i] = yymsp[0].minor.yy8.elems[i-1];
     }
-    free(yymsp[0].minor.yy4.elems);
+    free(yymsp[0].minor.yy8.elems);
+  yy_destructor(yypParser,2,&yymsp[-1].minor);
 }
-#line 669 "list.c"
+#line 681 "list.c"
         break;
-      case 2: /* list ::= WORD */
-#line 43 "list.y"
+      case 2: /* list ::= TEXT */
+#line 47 "list.y"
 { 
-    yygotominor.yy4.size = 1;
-    yygotominor.yy4.elems = malloc(sizeof(char*));
-    yygotominor.yy4.elems[0] = yymsp[0].minor.yy0->text;
+    yygotominor.yy8.size = 1;
+    yygotominor.yy8.elems = malloc(sizeof(struct token));
+    yygotominor.yy8.elems[0] = yymsp[0].minor.yy0;
 }
-#line 678 "list.c"
+#line 690 "list.c"
         break;
       default:
         break;
@@ -742,7 +754,7 @@ static void yy_syntax_error(
 #line 11 "list.y"
 
     puts("Error parsing input.\n");
-#line 743 "list.c"
+#line 755 "list.c"
   ParseARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
 

@@ -13,35 +13,39 @@
 }
 
 %token_type {struct token*}
+%token_destructor { free_token($$); }
+
 %type list {
     struct {
         int size;
-        char** elems;
+        struct token** elems;
     }
 }
 
 start ::= list(A) . 
 {   
     for (int i = 0; i<A.size; i++){
-        printf("Element %i: %s\n", i, A.elems[i]);
+        printf("Element %i: %s\n", i, A.elems[i]->text);
+        free_token(A.elems[i]);
     }
     free(A.elems); 
 }
 
-list(A) ::= WORD(B) COMMA list(C) . 
+list(A) ::= TEXT(B) COMMA list(C) . 
 {
     A.size = C.size + 1;
-    A.elems = malloc((A.size) * sizeof(char*));
-    A.elems[0] = B->text;
+    A.elems = malloc((A.size) * sizeof(struct token));
+    A.elems[0] = B;
+
     for (int i = 1; i<A.size; i++){
         A.elems[i] = C.elems[i-1];
     }
     free(C.elems);
 }
 
-list(A) ::= WORD(B) . 
+list(A) ::= TEXT(B) . 
 { 
     A.size = 1;
-    A.elems = malloc(sizeof(char*));
-    A.elems[0] = B->text;
+    A.elems = malloc(sizeof(struct token));
+    A.elems[0] = B;
 }
