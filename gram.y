@@ -15,37 +15,58 @@
 %token_type {struct token*}
 %token_destructor { free_token($$); }
 
-%type list {
-    struct {
-        int size;
-        struct token** elems;
-    }
-}
+translation_unit             ::= declaration_sequence.
 
-start ::= list(A) . 
-{   
-    for (int i = 0; i<A.size; i++){
-        printf("Element %i: %s\n", i, A.elems[i]->text);
-        free_token(A.elems[i]);
-    }
-    free(A.elems); 
-}
+declaration_sequence         ::= declaration declaration_sequence.
+declaration_sequence         ::= declaration.
 
-list(A) ::= TEXT(B) COMMA list(C) . 
-{
-    A.size = C.size + 1;
-    A.elems = malloc((A.size) * sizeof(struct token));
-    A.elems[0] = B;
+declaration                  ::= vector_declaration SEMIC.
+declaration                  ::= scalar_declaration SEMIC.
 
-    for (int i = 1; i<A.size; i++){
-        A.elems[i] = C.elems[i-1];
-    }
-    free(C.elems);
-}
+/** vector */
+vector_declaration           ::= IDENTIFIER EQ vector_expression.
 
-list(A) ::= TEXT(B) . 
-{ 
-    A.size = 1;
-    A.elems = malloc(sizeof(struct token));
-    A.elems[0] = B;
-}
+scalar_declaration           ::= IDENTIFIER EQ atomic_expression.
+
+vector_expression            ::= vector_addition.
+
+vector_addition              ::= vector_scalar_multiplication VECADD vector_scalar_multiplication.
+vector_addition              ::= vector_scalar_multiplication.
+
+vector_scalar_multiplication ::= atomic_expression SCMULT vector.
+vector_scalar_multiplication ::= vector.
+
+vector_negation              ::= SUB vector_negation.
+vector_negation              ::= vector_primary_expression.
+
+vector_primary_expression    ::= vector.
+vector_primary_expression    ::= LPAREN vector_expression RPAREN.
+
+vector                       ::= LBRACKET components RBRACKET.
+
+components                   ::= atomic_expression COMMA components.
+components                   ::= atomic_expression.
+
+/** scalar */
+atomic_expression            ::= additive_expression.
+
+additive_expression          ::= addition.
+additive_expression          ::= multiplicative_expression.
+
+addition                     ::= multiplication ADD multiplication.
+addition                     ::= multiplication SUB multiplication.
+
+multiplicative_expression    ::= multiplication.
+multiplicative_expression    ::= atomic.
+
+multiplication               ::= atomic MULT atomic.
+multiplication               ::= atomic DIV atomic.
+
+negation                     ::= SUB negation.
+negation                     ::= primary_expression.
+
+pimary_expression            ::= LPAREN atomic_expression RPAREN.
+pimary_expression            ::= atomic.
+
+atomic                       ::= IDENTIFIER.
+atomic                       ::= NUMBER.
