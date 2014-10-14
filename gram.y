@@ -4,7 +4,6 @@
     #include <string.h>
     #include <assert.h>
     #include <stdlib.h>
-    #include "lexer.h"
 }
 
 %syntax_error
@@ -12,8 +11,7 @@
     puts("Error parsing input.\n");
 }
 
-%token_type {struct token *}
-%token_destructor { free_token($$); }
+%token_type {const char *}
 
 translation_unit             ::= declaration_sequence.
 

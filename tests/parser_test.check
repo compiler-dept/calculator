@@ -1,0 +1,18 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "gram.h"
+#include "preamble.h"
+
+
+#test test_1
+    void *parser = ParseAlloc(malloc);
+
+    Parse(parser, IDENTIFIER, "a");
+    Parse(parser, EQ, "=");
+    Parse(parser, NUMBER, "1");
+    Parse(parser, ADD, "+");
+    Parse(parser, NUMBER, "1");
+    Parse(parser, SEMIC, ";");
+
+    Parse(parser, 0, 0);
+    ParseFree(parser, free);

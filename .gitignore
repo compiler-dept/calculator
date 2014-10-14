@@ -5,3 +5,6 @@ calculator
 lemon
 gram.c
 gram.h
+*_test.c
+bin/
+bin/*
