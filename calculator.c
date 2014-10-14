@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "list.h"
+#include "gram.h"
 #include "lexer.h"
 
 void *ParseAlloc(void *(*allocProc) (size_t));

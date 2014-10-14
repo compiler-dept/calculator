@@ -1,6 +1,7 @@
 *.swp
 *.o
 *.out
-main
+calculator
 lemon
-*~
+gram.c
+gram.h

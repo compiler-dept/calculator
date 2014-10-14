@@ -1,23 +1,19 @@
-CFLAGS = -Wall -g -std=gnu99
+CFLAGS  = -Wall -g -std=gnu99
 LDFLAGS = -lpcre
 
-all: parser main.o list.o lexer.o
-	$(CC) $(CFLAGS) $(LDFLAGS) -o main main.o list.o lexer.o
-
+all: parser calculator.o gram.o lexer.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o calculator calculator.o gram.o lexer.o
 
 %.o: %.c %.h
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
 
+.PHONY: parser clean
 
-.PHONY: parser
-parser: list.y lemon
-	./lemon list.y
-
+parser: gram.y lemon
+	./lemon gram.y
 
 lemon: lemon.c
 	$(CC) -o lemon lemon.c
 
-
-.PHONY: clean
 clean:
-	rm -f *.o *.out  main lemon
+	rm -f *.o *.out calculator lemon gram.c gram.h
