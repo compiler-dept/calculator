@@ -12,7 +12,7 @@
     puts("Error parsing input.\n");
 }
 
-%token_type {struct token*}
+%token_type {struct token *}
 %token_destructor { free_token($$); }
 
 translation_unit             ::= declaration_sequence.
@@ -33,8 +33,8 @@ vector_expression            ::= vector_addition.
 vector_addition              ::= vector_scalar_multiplication VECADD vector_scalar_multiplication.
 vector_addition              ::= vector_scalar_multiplication.
 
-vector_scalar_multiplication ::= atomic_expression SCMULT vector.
-vector_scalar_multiplication ::= vector.
+vector_scalar_multiplication ::= atomic_expression SCMULT vector_negation.
+vector_scalar_multiplication ::= vector_negation.
 
 vector_negation              ::= SUB vector_negation.
 vector_negation              ::= vector_primary_expression.
@@ -57,16 +57,16 @@ addition                     ::= multiplication ADD multiplication.
 addition                     ::= multiplication SUB multiplication.
 
 multiplicative_expression    ::= multiplication.
-multiplicative_expression    ::= atomic.
+multiplicative_expression    ::= negation.
 
-multiplication               ::= atomic MULT atomic.
-multiplication               ::= atomic DIV atomic.
+multiplication               ::= negation MULT negation.
+multiplication               ::= negation DIV negation.
 
 negation                     ::= SUB negation.
 negation                     ::= primary_expression.
 
-pimary_expression            ::= LPAREN atomic_expression RPAREN.
-pimary_expression            ::= atomic.
+primary_expression           ::= LPAREN atomic_expression RPAREN.
+primary_expression           ::= atomic.
 
 atomic                       ::= IDENTIFIER.
 atomic                       ::= NUMBER.
