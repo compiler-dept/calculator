@@ -17,7 +17,7 @@
 
     ck_assert(error == 0);
 
-#test test_1
+#test test_scalar_declaration_2
     char error = 0;
     void *parser = ParseAlloc(malloc);
 
@@ -35,7 +35,7 @@
 
     ck_assert(error == 0);
 
-#test test_3
+#test parse_scalar_declaration_3
     char error = 0;
     void *parser = ParseAlloc(malloc);
 
