@@ -8,12 +8,13 @@
 
 %syntax_error
 {
-    puts("Error parsing input.\n");
+    puts("Error parsing input.");
 }
 
 %token_type {const char *}
 
 translation_unit             ::= declaration_sequence. { printf("%s", "translation_unit\n"); }
+translation_unit             ::= error. { printf("%s", "Error handler\n"); } 
 
 declaration_sequence         ::= declaration declaration_sequence. { printf("%s", "declaration_sequence\n"); }
 declaration_sequence         ::= declaration. { printf("%s", "declaration_sequence\n"); }
@@ -51,8 +52,8 @@ atomic_expression            ::= additive_expression. { printf("%s", "atomic_exp
 additive_expression          ::= addition. { printf("%s", "additive_expression\n"); }
 additive_expression          ::= multiplicative_expression. { printf("%s", "additive_expression\n"); }
 
-addition                     ::= multiplication ADD multiplication. { printf("%s", "addition\n"); }
-addition                     ::= multiplication SUB multiplication. { printf("%s", "addition\n"); }
+addition                     ::= multiplicative_expression ADD multiplicative_expression. { printf("%s", "addition\n"); }
+addition                     ::= multiplicative_expression SUB multiplicative_expression. { printf("%s", "addition\n"); }
 
 multiplicative_expression    ::= multiplication. { printf("%s", "multiplicative_expression\n"); }
 multiplicative_expression    ::= negation. { printf("%s", "multiplicative_expression\n"); }
@@ -63,7 +64,7 @@ multiplication               ::= negation DIV negation. { printf("%s", "multipli
 negation                     ::= SUB negation. { printf("%s", "negation\n"); }
 negation                     ::= primary_expression. { printf("%s", "negation\n"); }
 
-primary_expression           ::= LPAREN atomic_expression RPAREN. { printf("%s", "primary_expression\n"); }
+primary_expression           ::= LPAREN atomic_expression RPAREN. { printf("%s", "(primary_expression)\n"); }
 primary_expression           ::= atomic. { printf("%s", "primary_expression\n"); }
 
 atomic                       ::= IDENTIFIER. { printf("%s", "atomic\n"); }

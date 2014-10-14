@@ -8,9 +8,11 @@
 
     Parse(parser, IDENTIFIER, "a");
     Parse(parser, EQ, "=");
+    Parse(parser, LPAREN, "(");
     Parse(parser, NUMBER, "1");
-    Parse(parser, ADD, "+");
+    Parse(parser, ADD, "*");
     Parse(parser, NUMBER, "1");
+    Parse(parser, RPAREN, ")");
     Parse(parser, SEMIC, ";");
 
     Parse(parser, 0, 0);
