@@ -3,17 +3,54 @@
 #include "../gram.h"
 #include "test_helper.h"
 
-#test test_1
+#test parse_scalar_declaration_1
+    char error = 0;
     void *parser = ParseAlloc(malloc);
 
-    Parse(parser, IDENTIFIER, "a");
-    Parse(parser, EQ, "=");
-    Parse(parser, LPAREN, "(");
-    Parse(parser, NUMBER, "1");
-    Parse(parser, ADD, "*");
-    Parse(parser, NUMBER, "1");
-    Parse(parser, RPAREN, ")");
-    Parse(parser, SEMIC, ";");
+    Parse(parser, IDENTIFIER, "a", &error);
+    Parse(parser, EQ, "=", &error);
+    Parse(parser, NUMBER, "1", &error);
+    Parse(parser, SEMIC, ";", &error);
 
-    Parse(parser, 0, 0);
+    Parse(parser, 0, 0, &error);
     ParseFree(parser, free);
+
+    ck_assert(error == 0);
+
+#test test_1
+    char error = 0;
+    void *parser = ParseAlloc(malloc);
+
+    Parse(parser, IDENTIFIER, "a", &error);
+    Parse(parser, EQ, "=", &error);
+    Parse(parser, LPAREN, "(", &error);
+    Parse(parser, NUMBER, "1", &error);
+    Parse(parser, ADD, "+", &error);
+    Parse(parser, NUMBER, "1", &error);
+    Parse(parser, RPAREN, ")", &error);
+    Parse(parser, SEMIC, ";", &error);
+
+    Parse(parser, 0, 0, &error);
+    ParseFree(parser, free);
+
+    ck_assert(error == 0);
+
+#test test_3
+    char error = 0;
+    void *parser = ParseAlloc(malloc);
+
+    Parse(parser, IDENTIFIER, "a", &error);
+    Parse(parser, EQ, "=", &error);
+    Parse(parser, LPAREN, "(", &error);
+    Parse(parser, NUMBER, "1", &error);
+    Parse(parser, ADD, "+", &error);
+    Parse(parser, NUMBER, "2", &error);
+    Parse(parser, MULT, "*", &error);
+    Parse(parser, NUMBER, "3", &error);
+    Parse(parser, RPAREN, ")", &error);
+    Parse(parser, SEMIC, ";", &error);
+
+    Parse(parser, 0, 0, &error);
+    ParseFree(parser, free);
+
+    ck_assert(error == 0);
