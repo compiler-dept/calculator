@@ -118,3 +118,47 @@
     ParseFree(parser, free);
 
     ck_assert(error == 0);
+
+#test parse_declaration_sequence_1
+    char error = 0;
+    void *parser = ParseAlloc(malloc);
+
+    Parse(parser, IDENTIFIER, "a", &error);
+    Parse(parser, EQ, "=", &error);
+    Parse(parser, NUMBER, "1", &error);
+    Parse(parser, SEMIC, ";", &error);
+    Parse(parser, IDENTIFIER, "b", &error);
+    Parse(parser, EQ, "=", &error);
+    Parse(parser, NUMBER, "2", &error);
+    Parse(parser, SEMIC, ";", &error);
+
+    Parse(parser, 0, 0, &error);
+    ParseFree(parser, free);
+
+    ck_assert(error == 0);
+
+#test parse_expression_in_vector_1
+    char error = 0;
+    void *parser = ParseAlloc(malloc);
+
+    Parse(parser, IDENTIFIER, "a", &error);
+    Parse(parser, EQ, "=", &error);
+    Parse(parser, LBRACKET, "[", &error);
+    Parse(parser, LPAREN, "(", &error);
+    Parse(parser, NUMBER, "1", &error);
+    Parse(parser, ADD, "+", &error);
+    Parse(parser, NUMBER, "2", &error);
+    Parse(parser, RPAREN, ")", &error);
+    Parse(parser, MULT, "*", &error);
+    Parse(parser, NUMBER, "3", &error);
+    Parse(parser, COMMA, ",", &error);
+    Parse(parser, NUMBER, "2", &error);
+    Parse(parser, COMMA, ",", &error);
+    Parse(parser, NUMBER, "3", &error);
+    Parse(parser, RBRACKET, "]", &error);
+    Parse(parser, SEMIC, ";", &error);
+
+    Parse(parser, 0, 0, &error);
+    ParseFree(parser, free);
+
+    ck_assert(error == 0);

@@ -12,11 +12,11 @@
 %syntax_error
 {
     puts("Error parsing input.");
+    *error = 1;
 }
 
-
 translation_unit             ::= declaration_sequence. { printf("%s", "translation_unit\n"); }
-translation_unit             ::= error. { printf("%s", "Error handler\n"); *error = 1; }
+translation_unit             ::= error. { printf("%s", "Error handler\n"); }
 
 declaration_sequence         ::= declaration declaration_sequence. { printf("%s", "declaration_sequence\n"); }
 declaration_sequence         ::= declaration. { printf("%s", "declaration_sequence\n"); }
