@@ -6,7 +6,7 @@
     #include <stdlib.h>
 }
 
-%token_type {const char *}
+%token_type { const char * }
 %extra_argument { char *error }
 
 %syntax_error

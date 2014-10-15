@@ -74,3 +74,47 @@
     ParseFree(parser, free);
 
     ck_assert(error == 0);
+
+#test parse_vector_addition_1
+    char error = 0;
+    void *parser = ParseAlloc(malloc);
+
+    Parse(parser, IDENTIFIER, "a", &error);
+    Parse(parser, EQ, "=", &error);
+    Parse(parser, LBRACKET, "[", &error);
+    Parse(parser, NUMBER, "1", &error);
+    Parse(parser, COMMA, ",", &error);
+    Parse(parser, NUMBER, "2", &error);
+    Parse(parser, RBRACKET, "]", &error);
+    Parse(parser, VECADD, "|+", &error);
+    Parse(parser, LBRACKET, "[", &error);
+    Parse(parser, NUMBER, "3", &error);
+    Parse(parser, COMMA, ",", &error);
+    Parse(parser, NUMBER, "4", &error);
+    Parse(parser, RBRACKET, "]", &error);
+    Parse(parser, SEMIC, ";", &error);
+
+    Parse(parser, 0, 0, &error);
+    ParseFree(parser, free);
+
+    ck_assert(error == 0);
+
+#test parse_vector_scalar_multiplication_1
+    char error = 0;
+    void *parser = ParseAlloc(malloc);
+
+    Parse(parser, IDENTIFIER, "a", &error);
+    Parse(parser, EQ, "=", &error);
+    Parse(parser, NUMBER, "2", &error);
+    Parse(parser, SCMULT, "|*", &error);
+    Parse(parser, LBRACKET, "[", &error);
+    Parse(parser, NUMBER, "3", &error);
+    Parse(parser, COMMA, ",", &error);
+    Parse(parser, NUMBER, "4", &error);
+    Parse(parser, RBRACKET, "]", &error);
+    Parse(parser, SEMIC, ";", &error);
+
+    Parse(parser, 0, 0, &error);
+    ParseFree(parser, free);
+
+    ck_assert(error == 0);
