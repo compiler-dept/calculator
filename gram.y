@@ -6,17 +6,17 @@
     #include <stdlib.h>
 }
 
-%token_type {const char *}
+%token_type { const char * }
 %extra_argument { char *error }
 
 %syntax_error
 {
     puts("Error parsing input.");
+    *error = 1;
 }
 
-
 translation_unit             ::= declaration_sequence. { printf("%s", "translation_unit\n"); }
-translation_unit             ::= error. { printf("%s", "Error handler\n"); *error = 1; } 
+translation_unit             ::= error. { printf("%s", "Error handler\n"); }
 
 declaration_sequence         ::= declaration declaration_sequence. { printf("%s", "declaration_sequence\n"); }
 declaration_sequence         ::= declaration. { printf("%s", "declaration_sequence\n"); }
@@ -24,11 +24,11 @@ declaration_sequence         ::= declaration. { printf("%s", "declaration_sequen
 declaration                  ::= vector_declaration SEMIC. { printf("%s", "declaration\n"); }
 declaration                  ::= scalar_declaration SEMIC. { printf("%s", "declaration\n"); }
 
-/** vector */
 vector_declaration           ::= IDENTIFIER EQ vector_expression. { printf("%s", "vector_declaration\n"); }
 
 scalar_declaration           ::= IDENTIFIER EQ atomic_expression. { printf("%s", "scalar_declaration\n"); }
 
+/** vector */
 vector_expression            ::= vector_addition. { printf("%s", "vector_expression\n"); }
 
 vector_addition              ::= vector_scalar_multiplication VECADD vector_scalar_multiplication. { printf("%s", "vector_addition\n"); }

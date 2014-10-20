@@ -4,7 +4,7 @@ LDFLAGS = -lpcre
 all: parser calculator.o gram.o lexer.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o calculator calculator.o gram.o lexer.o
 
-%.o: %.c %.h
+%.o: %.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
 lemon: lemon.c
@@ -18,11 +18,14 @@ parser: gram.y lemon
 test/%.c: test/%.check
 	checkmk $< > $@
 
-parser_test: test/parser_test.c parser
+test/bin/%_test.o: test/%_test.c
 	mkdir -p test/bin
-	$(CC) -o test/bin/$@ $< gram.c `pkg-config --cflags --libs check`
+	$(CC) -c $(CFLAGS) $< -o $@ `pkg-config --cflags check`
 
-test: parser_test
+test/bin/%_test: test/bin/%_test.o gram.o
+	$(CC) -o $@ $^ `pkg-config --cflags --libs check`
+
+test: parser test/bin/parser_test
 	./test/bin/parser_test
 
 clean:
