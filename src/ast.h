@@ -13,7 +13,10 @@ struct atomic {
 };
 
 struct primary_expression {
-  int type;
+  enum {
+    AST_ATOMIC_EXPRESSION = 1,
+    AST_ATOMIC
+  } type;
   union {
     struct atomic_expression *atomic_expression;
     struct atomic *atomic;

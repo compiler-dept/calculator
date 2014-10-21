@@ -82,25 +82,39 @@ multiplication               ::= negation DIV negation. { printf("%s", "multipli
 negation                     ::= SUB negation. { printf("%s", "negation\n"); }
 negation                     ::= primary_expression. { printf("%s", "negation\n"); }
 
-primary_expression           ::= LPAREN atomic_expression RPAREN. { printf("%s", "(primary_expression)\n"); }
-primary_expression           ::= atomic. { printf("%s", "primary_expression\n"); }
-
-atomic(ATOMIC)               ::= IDENTIFIER(VALUE).
+primary_expression(PE) ::= LPAREN atomic_expression(AE) RPAREN.
 {
-  printf("%s", "atomic\n");
-  ATOMIC = malloc(sizeof(struct atomic));
-  ATOMIC->type = AST_IDENTIFIER;
-  ATOMIC->identifier = malloc(strlen(VALUE) + 1);
-  strcpy((char *)(ATOMIC->identifier), VALUE);
-  parser_state->atomic = ATOMIC;
+  printf("%s", "(primary_expression)\n");
+  PE = malloc(sizeof(struct primary_expression));
+  PE->type = AST_ATOMIC_EXPRESSION;
+  PE->atomic_expression = AE;
+  parser_state->primary_expression = PE;
   parser_state->state = OK;
 }
-atomic(ATOMIC)               ::= NUMBER(VALUE).
+primary_expression(PE) ::= atomic(A).
+{
+  printf("%s", "primary_expression\n");
+  PE = malloc(sizeof(struct primary_expression));
+  PE->type = AST_ATOMIC;
+  PE->atomic = A;
+  parser_state->primary_expression = PE;
+  parser_state->state = OK;
+}
+
+atomic(A) ::= IDENTIFIER(I).
 {
   printf("%s", "atomic\n");
-  ATOMIC = malloc(sizeof(struct atomic));
-  ATOMIC->type = AST_NUMBER;
-  ATOMIC->number = atof(VALUE);
-  parser_state->atomic = ATOMIC;
+  A = malloc(sizeof(struct atomic));
+  A->type = AST_IDENTIFIER;
+  A->identifier = malloc(strlen(I) + 1);
+  strcpy((char *)(A->identifier), I);
+  parser_state->state = OK;
+}
+atomic(A) ::= NUMBER(N).
+{
+  printf("%s", "atomic\n");
+  A = malloc(sizeof(struct atomic));
+  A->type = AST_NUMBER;
+  A->number = atof(N);
   parser_state->state = OK;
 }

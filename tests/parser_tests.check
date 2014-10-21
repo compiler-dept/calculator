@@ -176,5 +176,5 @@
     Parse(parser, 0, 0, &parser_state);
     ParseFree(parser, free);
 
-    ck_assert(parser_state.atomic->number == 42);
+    ck_assert(parser_state.primary_expression->atomic->number == 42);
     ck_assert(parser_state.state == OK);
