@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../hashmap.h"
+#include "../src/hashmap.h"
 
 #test put_get_equality
 	struct hashmap *table = hashmap_alloc(4);

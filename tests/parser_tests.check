@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../gram.h"
+#include "../src/gram.h"
 #include "test_helper.h"
 
 #test parse_scalar_declaration_1
