@@ -1,32 +1,50 @@
-CFLAGS  = -Wall -g -std=gnu99
+CFLAGS=-Wall -g -std=gnu99
 LDFLAGS = -lpcre
 
-all: parser calculator.o gram.o lexer.o
-	$(CC) $(CFLAGS) $(LDFLAGS) -o calculator calculator.o gram.o lexer.o
+SOURCES=$(wildcard src/*.c)
+OBJECTS=$(patsubst %.c, %.o, $(SOURCES))
 
-%.o: %.c
-	$(CC) -c $(CFLAGS) $< -o $@
+LEMON_SOURCES=$(wildcard src/*.y)
+LEMON_OBJECTS=$(patsubst %.y, %.o, $(LEMON_SOURCES)) \
+	$(patsubst %.y, %.c, $(LEMON_SOURCES)) \
+	$(patsubst %.y, %.out, $(LEMON_SOURCES)) \
+	$(patsubst %.y, %.h, $(LEMON_SOURCES))
 
-lemon: lemon.c
-	$(CC) -o lemon lemon.c
+TEST_SOURCES=$(wildcard tests/*_tests.check)
+TEST_OBJECTS=$(patsubst %.check, %.o, $(TEST_SOURCES)) \
+	$(patsubst %.check, %.c, $(TEST_SOURCES))
+TESTS=$(patsubst %.check, bin/%, $(TEST_SOURCES))
 
-.PHONY: parser test parser_test clean
+all: bin/calculator
 
-parser: gram.y lemon
-	./lemon gram.y
+bin/calculator: bin parser $(OBJECTS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJECTS) src/gram.o
 
-test/%.c: test/%.check
+src/%.o: src/%.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+.PHONY: test clean
+
+test: $(TESTS)
+
+bin:
+	mkdir -p bin
+
+bin/tests:
+	mkdir -p bin/tests
+
+bin/lemon: src/lemon/lemon.c bin
+	$(CC) $(CFLAGS) -o $@ $<
+
+parser: src/gram.y bin/lemon
+	bin/lemon T=src/lemon/lempar.c $<
+
+tests/%_tests.c: tests/%_tests.check
 	checkmk $< > $@
 
-test/bin/%_test.o: test/%_test.c
-	mkdir -p test/bin
-	$(CC) -c $(CFLAGS) $< -o $@ `pkg-config --cflags check`
-
-test/bin/%_test: test/bin/%_test.o gram.o
-	$(CC) -o $@ $^ `pkg-config --cflags --libs check`
-
-test: parser test/bin/parser_test
-	./test/bin/parser_test
+bin/tests/%_tests: tests/%_tests.c parser bin/tests
+	$(CC) $(CFLAGS) `pkg-config --cflags --libs check` -o $@ $< src/gram.c
+	$@
 
 clean:
-	rm -rf *.o *.out calculator lemon gram.c gram.h test/*.c test/bin
+	rm -rf bin $(OBJECTS) $(LEMON_OBJECTS) $(TEST_OBJECTS)

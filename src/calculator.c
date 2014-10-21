@@ -9,7 +9,7 @@ void ParseFree(void *, void (*freeProc) (void *));
 
 int main()
 {
-
+/*
 	char s[100];
 
 	while (1) {
@@ -33,4 +33,5 @@ int main()
 		}
 	}
 	return 0;
+*/
 }
