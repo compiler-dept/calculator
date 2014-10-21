@@ -163,3 +163,18 @@
     ParseFree(parser, free);
 
     ck_assert(parser_state.state == OK);
+
+#test parse_atomic_1
+    struct parser_state parser_state;
+    void *parser = ParseAlloc(malloc);
+
+    Parse(parser, IDENTIFIER, "a", &parser_state);
+    Parse(parser, EQ, "=", &parser_state);
+    Parse(parser, NUMBER, "42", &parser_state);
+    Parse(parser, SEMIC, ";", &parser_state);
+
+    Parse(parser, 0, 0, &parser_state);
+    ParseFree(parser, free);
+
+    ck_assert(parser_state.atomic->number == 42);
+    ck_assert(parser_state.state == OK);
