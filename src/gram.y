@@ -79,8 +79,24 @@ multiplicative_expression    ::= negation. { printf("%s", "multiplicative_expres
 multiplication               ::= negation MULT negation. { printf("%s", "multiplication\n"); }
 multiplication               ::= negation DIV negation. { printf("%s", "multiplication\n"); }
 
-negation                     ::= SUB negation. { printf("%s", "negation\n"); }
-negation                     ::= primary_expression. { printf("%s", "negation\n"); }
+negation(NL) ::= SUB negation(NR).
+{
+  printf("%s", "negation\n");
+  NL = malloc(sizeof(struct negation));
+  NL->type = AST_NEGATION;
+  NL->negation = NR;
+  parser_state->negation = NL;
+  parser_state->state = OK;
+}
+negation(N) ::= primary_expression(PE).
+{
+  printf("%s", "negation\n");
+  N = malloc(sizeof(struct negation));
+  N->type = AST_PRIMARY_EXPRESSION;
+  N->primary_expression = PE;
+  parser_state->negation = N;
+  parser_state->state = OK;
+}
 
 primary_expression(PE) ::= LPAREN atomic_expression(AE) RPAREN.
 {
@@ -88,7 +104,6 @@ primary_expression(PE) ::= LPAREN atomic_expression(AE) RPAREN.
   PE = malloc(sizeof(struct primary_expression));
   PE->type = AST_ATOMIC_EXPRESSION;
   PE->atomic_expression = AE;
-  parser_state->primary_expression = PE;
   parser_state->state = OK;
 }
 primary_expression(PE) ::= atomic(A).
@@ -97,7 +112,6 @@ primary_expression(PE) ::= atomic(A).
   PE = malloc(sizeof(struct primary_expression));
   PE->type = AST_ATOMIC;
   PE->atomic = A;
-  parser_state->primary_expression = PE;
   parser_state->state = OK;
 }
 

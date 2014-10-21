@@ -11,7 +11,7 @@ enum states {
 struct parser_state {
 	enum states state;
 	//struct translation_unit *translation_unit;
-	struct primary_expression *primary_expression;
+	struct negation *negation;
 };
 
 #endif

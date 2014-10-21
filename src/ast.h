@@ -24,7 +24,10 @@ struct primary_expression {
 };
 
 struct negation {
-  int type;
+  enum {
+    AST_NEGATION = 1,
+    AST_PRIMARY_EXPRESSION
+  } type;
   union {
     struct negation *negation;
     struct primary_expression *primary_expression;
