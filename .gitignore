@@ -1,9 +1,5 @@
-*.swp
+bin
 *.o
 *.out
-calculator
-lemon
 gram.c
 gram.h
-test/*_test.c
-test/bin
