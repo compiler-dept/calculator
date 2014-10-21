@@ -22,11 +22,13 @@ test/bin/%_test.o: test/%_test.c
 	mkdir -p test/bin
 	$(CC) -c $(CFLAGS) $< -o $@ `pkg-config --cflags check`
 
-test/bin/%_test: test/bin/%_test.o gram.o
+test/bin/%_test: test/bin/%_test.o gram.o hashmap.o
 	$(CC) -o $@ $^ `pkg-config --cflags --libs check`
 
-test: parser test/bin/parser_test
+test: parser test/bin/parser_test test/bin/hashmap_test
 	./test/bin/parser_test
+	./test/bin/hashmap_test
+
 
 clean:
 	rm -rf *.o *.out calculator lemon gram.c gram.h test/*.c test/bin

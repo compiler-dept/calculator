@@ -115,29 +115,3 @@ int hashmap_get(struct hashmap *table, const char *key)
 		 || strcmp(table->values[position].key, key) != 0);
 	return table->values[position].value;
 }
-
-int main(int argc, const char *argv[])
-{
-	puts("Populate hashmap");
-	struct hashmap *table = hashmap_alloc(4);
-	for (int i = 0; i < 2048; i++) {
-		char key[10];
-		sprintf(key, "key%i", i);
-		table = hashmap_put(table, key, i);
-	}
-
-	puts("Check correct mappings");
-	int errors = 0;
-	for (int i = 0; i < 2048; i++) {
-		char key[10];
-		sprintf(key, "key%i", i);
-		if (hashmap_get(table, key) != i) {
-			errors++;
-		}
-	}
-
-	hashmap_free(table);
-
-	printf("Errors: %i\n", errors);
-	return 0;
-}
