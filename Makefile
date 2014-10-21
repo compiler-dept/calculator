@@ -1,4 +1,4 @@
-CFLAGS=-Wall -g -std=gnu99
+CFLAGS=-g -std=gnu99
 LDFLAGS = -lpcre
 
 SOURCES=$(wildcard src/*.c)

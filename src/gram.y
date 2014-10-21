@@ -4,15 +4,31 @@
     #include <string.h>
     #include <assert.h>
     #include <stdlib.h>
+    #include "ast.h"
+    #include "parser_state.h"
 }
 
 %token_type { const char * }
-%extra_argument { char *error }
+
+%type atomic { struct atomic * }
+%type primary_expression { struct primary_expression * }
+%type negation { struct negation * }
+%type multiplication { struct multiplication * }
+%type multiplicative_expression { struct multiplicative_expression * }
+%type addition { struct addition * }
+%type additive_expression { struct additive_expression * }
+%type atomic_expression { struct atomic_expression * }
+%type scalar_declaration { struct scalar_declaration * }
+%type declaration { struct declaration * }
+%type declaration_sequence { struct declaration_sequence * }
+%type translation_unit { struct translation_unit * }
+
+%extra_argument { struct parser_state *parser_state }
 
 %syntax_error
 {
     puts("Error parsing input.");
-    *error = 1;
+    parser_state->state = ERROR;
 }
 
 translation_unit             ::= declaration_sequence. { printf("%s", "translation_unit\n"); }
@@ -69,5 +85,22 @@ negation                     ::= primary_expression. { printf("%s", "negation\n"
 primary_expression           ::= LPAREN atomic_expression RPAREN. { printf("%s", "(primary_expression)\n"); }
 primary_expression           ::= atomic. { printf("%s", "primary_expression\n"); }
 
-atomic                       ::= IDENTIFIER. { printf("%s", "atomic\n"); }
-atomic                       ::= NUMBER. { printf("%s", "atomic\n"); }
+atomic(ATOMIC)               ::= IDENTIFIER(VALUE).
+{
+  printf("%s", "atomic\n");
+  ATOMIC = malloc(sizeof(struct atomic));
+  ATOMIC->type = AST_IDENTIFIER;
+  ATOMIC->identifier = malloc(strlen(VALUE) + 1);
+  strcpy((char *)(ATOMIC->identifier), VALUE);
+  parser_state->atomic = ATOMIC;
+  parser_state->state = OK;
+}
+atomic(ATOMIC)               ::= NUMBER(VALUE).
+{
+  printf("%s", "atomic\n");
+  ATOMIC = malloc(sizeof(struct atomic));
+  ATOMIC->type = AST_NUMBER;
+  ATOMIC->number = atof(VALUE);
+  parser_state->atomic = ATOMIC;
+  parser_state->state = OK;
+}

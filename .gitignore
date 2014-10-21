@@ -3,3 +3,4 @@ bin
 *.out
 gram.c
 gram.h
+tests/*.c
