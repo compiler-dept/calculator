@@ -55,7 +55,7 @@ struct hashmap *clone_and_double(struct hashmap *table)
 	for (int i = 0; i < table->capacity; i++) {
 		entry = table->values + i;
 		if (entry->key) {
-			hashmap_put(new_table, entry->key, entry->value);
+			hashmap_put(&new_table, entry->key, entry->value);
 		}
 	}
 	return new_table;
@@ -66,12 +66,12 @@ struct hashmap *clone_and_double(struct hashmap *table)
  * @detail Insert using quadratic probing as collision strategy.
  * Double capacity when size > (0.7 * capacity).
  */
-struct hashmap *hashmap_put(struct hashmap *table, const char *key, void *value)
+void hashmap_put(struct hashmap **table, const char *key, void *value)
 {
-	if (table->size > 0.7 * table->capacity) {
-		struct hashmap *doubled_table = clone_and_double(table);
-		hashmap_free(table);
-		table = doubled_table;
+	if ((*table)->size > 0.7 * (*table)->capacity) {
+		struct hashmap *doubled_table = clone_and_double(*table);
+		hashmap_free(*table);
+		*table = doubled_table;
 	}
 
 	unsigned long hashval = hash((char *)key);
@@ -81,20 +81,19 @@ struct hashmap *hashmap_put(struct hashmap *table, const char *key, void *value)
 	do {
 		// Quadratic probing
 		position = hashval + ((int)(0.5 * i)) + ((int)(0.5 * i * i));
-		position %= table->capacity;
+		position %= (*table)->capacity;
 		i++;
-	} while (table->values[position].key
+	} while ((*table)->values[position].key
 		 && !(reassign =
-		      strcmp(table->values[position].key, key) == 0));
+		      strcmp((*table)->values[position].key, key) == 0));
 
 	if (!reassign) {
-		table->size++;
-		table->values[position].key = malloc(strlen(key) + 1);
-		strcpy(table->values[position].key, key);
+		(*table)->size++;
+		(*table)->values[position].key = malloc(strlen(key) + 1);
+		strcpy((*table)->values[position].key, key);
 	}
 
-	table->values[position].value = value;
-	return table;
+	(*table)->values[position].value = value;
 }
 
 /**
