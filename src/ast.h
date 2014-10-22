@@ -44,7 +44,10 @@ struct multiplication {
 };
 
 struct multiplicative_expression {
-  int type;
+  enum {
+    AST_MULTIPLICATION = 1,
+    AST_NEGATION
+  } type;
   union {
     struct multiplication *multiplication;
     struct negation *negation;
