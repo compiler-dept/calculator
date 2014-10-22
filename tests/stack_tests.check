@@ -1,0 +1,10 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "../src/stack.h"
+
+#test put_get_equality
+	struct stack *stack = stack_alloc();
+    int val = 0;
+
+    stack_push(&stack, val);
+    ck_assert(*stack-pop(&stack) == 0);
