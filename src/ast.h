@@ -52,7 +52,7 @@ enum alternative {
 	ALT_ADD,
 	ALT_SUB,
 	ALT_MULT,
-	ALT_DIV,
+	ALT_DIV
 };
 
 struct atomic {
