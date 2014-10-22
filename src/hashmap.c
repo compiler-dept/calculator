@@ -66,7 +66,7 @@ struct hashmap *clone_and_double(struct hashmap *table)
  * @detail Insert using quadratic probing as collision strategy.
  * Double capacity when size > (0.7 * capacity).
  */
-struct hashmap *hashmap_put(struct hashmap *table, const char *key, int value)
+struct hashmap *hashmap_put(struct hashmap *table, const char *key, void *value)
 {
 	if (table->size > 0.7 * table->capacity) {
 		struct hashmap *doubled_table = clone_and_double(table);
@@ -101,7 +101,7 @@ struct hashmap *hashmap_put(struct hashmap *table, const char *key, int value)
  * @brief Get value from hash table.
  * @detail 
  */
-int hashmap_get(struct hashmap *table, const char *key)
+void *hashmap_get(struct hashmap *table, const char *key)
 {
 	unsigned long hashval = hash((char *)key);
 	unsigned long position;
@@ -111,7 +111,11 @@ int hashmap_get(struct hashmap *table, const char *key)
 		position = hashval + ((int)(0.5 * i)) + ((int)(0.5 * i * i));
 		position %= table->capacity;
 		i++;
-	} while (!table->values[position].key
-		 || strcmp(table->values[position].key, key) != 0);
-	return table->values[position].value;
+	} while (table->values[position].key &&
+		 strcmp(table->values[position].key, key) != 0);
+	if (table->values[position].key){
+        return table->values[position].value;
+    } else {
+        return NULL;
+    }
 }

@@ -9,7 +9,7 @@
 
 struct hashmap_entry {
     char* key;
-    int value;
+    void *value;
 };
 
 struct hashmap {
@@ -21,7 +21,7 @@ struct hashmap {
 struct hashmap *hashmap_alloc(int capacity);
 void hashmap_free(struct hashmap *table);
 struct hashmap *hashmap_put(struct hashmap *table, const char *key,
-		       int value);
-int hashmap_get(struct hashmap *table, const char *key);
+		       void *value);
+void *hashmap_get(struct hashmap *table, const char *key);
 
 #endif /* end of include guard: HASHTABLE_H */
