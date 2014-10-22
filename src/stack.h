@@ -8,7 +8,6 @@ struct stack {
     struct stack *tail;
 };
 
-struct stack *stack_alloc();
 void stack_free(struct stack *stack);
 void stack_push(struct stack **stack, void *elem);
 void *stack_pop(struct stack **stack);
