@@ -76,8 +76,26 @@ addition                     ::= multiplicative_expression SUB multiplicative_ex
 multiplicative_expression    ::= multiplication. { printf("%s", "multiplicative_expression\n"); }
 multiplicative_expression    ::= negation. { printf("%s", "multiplicative_expression\n"); }
 
-multiplication               ::= negation MULT negation. { printf("%s", "multiplication\n"); }
-multiplication               ::= negation DIV negation. { printf("%s", "multiplication\n"); }
+multiplication(M) ::= negation(N0) MULT negation(N1).
+{
+  printf("%s", "multiplication\n");
+  M = malloc(sizeof(struct multiplication));
+  M->type = AST_MULTIPLICATION;
+  M->negation0 = N0;
+  M->negation1 = N1;
+  parser_state->multiplication = M;
+  parser_state->state = OK;
+}
+multiplication(M) ::= negation(N0) DIV negation(N1).
+{
+  printf("%s", "multiplication\n");
+  M = malloc(sizeof(struct multiplication));
+  M->type = AST_DIVISION;
+  M->negation0 = N0;
+  M->negation1 = N1;
+  parser_state->multiplication = M;
+  parser_state->state = OK;
+}
 
 negation(NL) ::= SUB negation(NR).
 {
@@ -85,7 +103,6 @@ negation(NL) ::= SUB negation(NR).
   NL = malloc(sizeof(struct negation));
   NL->type = AST_NEGATION;
   NL->negation = NR;
-  parser_state->negation = NL;
   parser_state->state = OK;
 }
 negation(N) ::= primary_expression(PE).
@@ -94,7 +111,6 @@ negation(N) ::= primary_expression(PE).
   N = malloc(sizeof(struct negation));
   N->type = AST_PRIMARY_EXPRESSION;
   N->primary_expression = PE;
-  parser_state->negation = N;
   parser_state->state = OK;
 }
 

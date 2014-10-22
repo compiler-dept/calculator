@@ -35,7 +35,10 @@ struct negation {
 };
 
 struct multiplication {
-  int type;
+  enum {
+    AST_MULTIPLICATION = 1,
+    AST_DIVISION
+  } type;
   struct negation *negation0;
   struct negation *negation1;
 };
