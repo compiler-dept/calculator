@@ -1,6 +1,8 @@
 #ifndef AST_H
 #define AST_H
 
+#include "stack.h"
+
 enum type {
 	N_ATOMIC = 1,
 	N_PRIMARY_EXPRESSION,
@@ -147,5 +149,17 @@ struct translation_unit {
 	enum alternative alternative;
 	struct declaration_sequence *declaration_sequence;
 };
+
+/**
+ * AST iterator
+ */
+
+struct ast_iterator {
+  struct stack *stack;
+  void *current;
+};
+
+struct ast_iterator *ast_iterator_init(struct translation_unit *);
+void *ast_iterator_next(struct ast_iterator *);
 
 #endif
