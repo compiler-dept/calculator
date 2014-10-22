@@ -2,9 +2,12 @@
 #include <stdlib.h>
 #include "../src/stack.h"
 
-#test put_get_equality
+#test push_pop_equality
 	struct stack *stack = stack_alloc();
-    int val = 0;
+    int values[] = {0,1,2,3,4,5,6,7,8,9};    
 
-    stack_push(&stack, val);
-    ck_assert(*stack-pop(&stack) == 0);
+    for (int i = 0; i < 10; i++){
+        //stack_push(&stack, values + i);
+    }
+
+    stack_free(stack);
