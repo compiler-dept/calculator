@@ -7,11 +7,14 @@
 	struct stack *stack = NULL;
 
     for (int i = 0; i < 10; i++){
-        if (!stack){
-            stack = stack_alloc(values + i);
-        } else {
-            stack_push(&stack, values + i);
-        }
+        stack_push(&stack, values + i);
+    }
+
+    ck_assert(stack != NULL);
+
+    for (int i = 9; i > 2; i--){
+        int *val = (int*) stack_pop(&stack);
+        ck_assert(val == values + i);
     }
 
     stack_free(stack);
