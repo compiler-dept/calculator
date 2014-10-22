@@ -31,18 +31,57 @@
     parser_state->state = ERROR;
 }
 
-translation_unit             ::= declaration_sequence. { printf("%s", "translation_unit\n"); }
-translation_unit             ::= error. { printf("%s", "Error handler\n"); }
+translation_unit(TU) ::= declaration_sequence(DS).
+{
+  printf("%s", "translation_unit\n");
+  TU = malloc(sizeof(struct translation_unit));
+  TU->type = AST_DECLARATION_SEQUENCE;
+  TU->declaration_sequence = DS;
+}
+translation_unit ::= error.
+{
+  printf("%s", "Error handler\n");
+}
 
-declaration_sequence         ::= declaration declaration_sequence. { printf("%s", "declaration_sequence\n"); }
-declaration_sequence         ::= declaration. { printf("%s", "declaration_sequence\n"); }
+declaration_sequence(DSL) ::= declaration(D) declaration_sequence(DSR).
+{
+  printf("%s", "declaration_sequence\n");
+  DSL = malloc(sizeof(struct declaration_sequence));
+  DSL->type = AST_DECLARATION_SEQUENCE;
+  DSL->declaration = D;
+  DSL->declaration_sequence = DSR;
+}
+declaration_sequence(DS) ::= declaration(D).
+{
+  printf("%s", "declaration_sequence\n");
+  DS = malloc(sizeof(struct declaration_sequence));
+  DS->type = AST_DECLARATION;
+  DS->declaration = D;
+  DS->declaration_sequence = NULL;
+}
 
-declaration                  ::= vector_declaration SEMIC. { printf("%s", "declaration\n"); }
-declaration                  ::= scalar_declaration SEMIC. { printf("%s", "declaration\n"); }
+declaration ::= vector_declaration SEMIC.
+{
+  printf("%s", "declaration\n");
+}
+declaration(D) ::= scalar_declaration(SD) SEMIC.
+{
+  printf("%s", "declaration\n");
+  D = malloc(sizeof(struct declaration));
+  D->type = AST_SCALAR_DECLARATION;
+  D->scalar_declaration = SD;
+}
 
 vector_declaration           ::= IDENTIFIER EQ vector_expression. { printf("%s", "vector_declaration\n"); }
 
-scalar_declaration           ::= IDENTIFIER EQ atomic_expression. { printf("%s", "scalar_declaration\n"); }
+scalar_declaration(SD) ::= IDENTIFIER(I) EQ atomic_expression(AE).
+{
+  printf("%s", "scalar_declaration\n");
+  SD = malloc(sizeof(struct scalar_declaration));
+  SD->type = AST_ATOMIC_EXPRESSION;
+  SD->identifier = I;
+  SD->atomic_expression = AE;
+}
 
 /** vector */
 vector_expression            ::= vector_addition. { printf("%s", "vector_expression\n"); }
@@ -65,13 +104,45 @@ components                   ::= atomic_expression COMMA components. { printf("%
 components                   ::= atomic_expression. { printf("%s", "components\n"); }
 
 /** scalar */
-atomic_expression            ::= additive_expression. { printf("%s", "atomic_expression\n"); }
+atomic_expression(ATE) ::= additive_expression(ADE).
+{
+  printf("%s", "atomic_expression\n");
+  ATE = malloc(sizeof(struct atomic_expression));
+  ATE->type = AST_ADDITIVE_EXPRESSION;
+  ATE->additive_expression = ADE;
+}
 
-additive_expression          ::= addition. { printf("%s", "additive_expression\n"); }
-additive_expression          ::= multiplicative_expression. { printf("%s", "additive_expression\n"); }
+additive_expression(AE) ::= addition(A).
+{
+  printf("%s", "additive_expression\n");
+  AE = malloc(sizeof(struct additive_expression));
+  AE->type = AST_ADDITION;
+  AE->addition = A;
+}
+additive_expression(AE) ::= multiplicative_expression(ME).
+{
+  printf("%s", "additive_expression\n");
+  AE = malloc(sizeof(struct additive_expression));
+  AE->type = AST_MULTIPLICATIVE_EXPRESSION;
+  AE->multiplicative_expression = ME;
+}
 
-addition                     ::= multiplicative_expression ADD multiplicative_expression. { printf("%s", "addition\n"); }
-addition                     ::= multiplicative_expression SUB multiplicative_expression. { printf("%s", "addition\n"); }
+addition(A) ::= multiplicative_expression(ME0) ADD multiplicative_expression(ME1).
+{
+  printf("%s", "addition\n");
+  A = malloc(sizeof(struct addition));
+  A->type = AST_ADD;
+  A->expression0 = ME0;
+  A->expression1 = ME1;
+}
+addition(A) ::= multiplicative_expression(ME0) SUB multiplicative_expression(ME1).
+{
+  printf("%s", "addition\n");
+  A = malloc(sizeof(struct addition));
+  A->type = AST_SUB;
+  A->expression0 = ME0;
+  A->expression1 = ME1;
+}
 
 multiplicative_expression(ME) ::= multiplication(M).
 {
@@ -79,7 +150,6 @@ multiplicative_expression(ME) ::= multiplication(M).
   ME = malloc(sizeof(struct multiplicative_expression));
   ME->type = AST_MULTIPLICATION;
   ME->multiplication = M;
-  parser_state->multiplicative_expression = ME;
   parser_state->state = OK;
 }
 multiplicative_expression(ME) ::= negation(N).
@@ -88,7 +158,6 @@ multiplicative_expression(ME) ::= negation(N).
   ME = malloc(sizeof(struct multiplicative_expression));
   ME->type = AST_NEGATION;
   ME->negation = N;
-  parser_state->multiplicative_expression = ME;
   parser_state->state = OK;
 }
 

@@ -55,13 +55,19 @@ struct multiplicative_expression {
 };
 
 struct addition {
-  int type;
+  enum {
+    AST_ADD = 1,
+    AST_SUB
+  } type;
   struct multiplicative_expression *expression0;
   struct multiplicative_expression *expression1;
 };
 
 struct additive_expression {
-  int type;
+  enum {
+    AST_ADDITION = 1,
+    AST_MULTIPLICATIVE_EXPRESSION
+  } type;
   union {
     struct addition *addition;
     struct multiplicative_expression *multiplicative_expression;
@@ -69,25 +75,43 @@ struct additive_expression {
 };
 
 struct atomic_expression {
+  enum {
+    AST_ADDITIVE_EXPRESSION = 1
+  } type;
   struct additive_expression *additive_expression;
 };
 
 struct scalar_declaration {
-  struct identifier *identifier;
+  enum {
+    AST_ATOMIC_EXPRESSION = 1
+  } type;
+  const char *identifier;
   struct atomic_expression *atomic_expression;
 };
 
 struct declaration {
+  enum {
+    AST_VECTOR_DECLARATION = 1,
+    AST_SCALAR_DECLARATION
+  } type;
   // struct vector_declaration *vector_declaration;
   struct scalar_declaration *scalar_declaration;
 };
 
 struct declaration_sequence {
+  enum {
+    AST_DECLARATION = 1,
+    AST_DECLARATION_SEQUENCE
+  } type;
   int size;
   struct declaration *declaration;
+  struct declaration_sequence *declaration_sequence;
 };
 
 struct translation_unit {
+  enum {
+    AST_DECLARATION_SEQUENCE = 1
+  } type;
   struct declaration_sequence *declaration_sequence;
 };
 
