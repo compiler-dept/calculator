@@ -35,6 +35,7 @@ translation_unit(TU) ::= declaration_sequence(DS).
 {
   printf("%s", "translation_unit\n");
   TU = malloc(sizeof(struct translation_unit));
+  TU->type = N_TRANSLATION_UNIT;
   TU->alternative = AST_DECLARATION_SEQUENCE;
   TU->declaration_sequence = DS;
 }
@@ -47,6 +48,7 @@ declaration_sequence(DSL) ::= declaration(D) declaration_sequence(DSR).
 {
   printf("%s", "declaration_sequence\n");
   DSL = malloc(sizeof(struct declaration_sequence));
+  DSL->type = N_DECLARATION_SEQUENCE;
   DSL->alternative = AST_DECLARATION_SEQUENCE;
   DSL->declaration = D;
   DSL->declaration_sequence = DSR;
@@ -55,6 +57,7 @@ declaration_sequence(DS) ::= declaration(D).
 {
   printf("%s", "declaration_sequence\n");
   DS = malloc(sizeof(struct declaration_sequence));
+  DS->type = N_DECLARATION_SEQUENCE;
   DS->alternative = AST_DECLARATION;
   DS->declaration = D;
   DS->declaration_sequence = NULL;
@@ -68,6 +71,7 @@ declaration(D) ::= scalar_declaration(SD) SEMIC.
 {
   printf("%s", "declaration\n");
   D = malloc(sizeof(struct declaration));
+  D->type = N_DECLARATION;
   D->alternative = AST_SCALAR_DECLARATION;
   D->scalar_declaration = SD;
 }
@@ -78,6 +82,7 @@ scalar_declaration(SD) ::= IDENTIFIER(I) EQ atomic_expression(AE).
 {
   printf("%s", "scalar_declaration\n");
   SD = malloc(sizeof(struct scalar_declaration));
+  SD->type = N_SCALAR_DECLARATION;
   SD->alternative = AST_ATOMIC_EXPRESSION;
   SD->identifier = I;
   SD->atomic_expression = AE;
@@ -108,6 +113,7 @@ atomic_expression(ATE) ::= additive_expression(ADE).
 {
   printf("%s", "atomic_expression\n");
   ATE = malloc(sizeof(struct atomic_expression));
+  ATE->type = N_ATOMIC_EXPRESSION;
   ATE->alternative = AST_ADDITIVE_EXPRESSION;
   ATE->additive_expression = ADE;
 }
@@ -116,6 +122,7 @@ additive_expression(AE) ::= addition(A).
 {
   printf("%s", "additive_expression\n");
   AE = malloc(sizeof(struct additive_expression));
+  AE->type = N_ADDITIVE_EXPRESSION;
   AE->alternative = AST_ADDITION;
   AE->addition = A;
 }
@@ -123,6 +130,7 @@ additive_expression(AE) ::= multiplicative_expression(ME).
 {
   printf("%s", "additive_expression\n");
   AE = malloc(sizeof(struct additive_expression));
+  AE->type = N_ADDITIVE_EXPRESSION;
   AE->alternative = AST_MULTIPLICATIVE_EXPRESSION;
   AE->multiplicative_expression = ME;
 }
@@ -131,6 +139,7 @@ addition(A) ::= multiplicative_expression(ME0) ADD multiplicative_expression(ME1
 {
   printf("%s", "addition\n");
   A = malloc(sizeof(struct addition));
+  A->type = N_ADDITION;
   A->alternative = AST_ADD;
   A->expression0 = ME0;
   A->expression1 = ME1;
@@ -139,6 +148,7 @@ addition(A) ::= multiplicative_expression(ME0) SUB multiplicative_expression(ME1
 {
   printf("%s", "addition\n");
   A = malloc(sizeof(struct addition));
+  A->type = N_ADDITION;
   A->alternative = AST_SUB;
   A->expression0 = ME0;
   A->expression1 = ME1;
@@ -148,6 +158,7 @@ multiplicative_expression(ME) ::= multiplication(M).
 {
   printf("%s", "multiplicative_expression\n");
   ME = malloc(sizeof(struct multiplicative_expression));
+  ME->type = N_MULTIPLICATIVE_EXPRESSION;
   ME->alternative = AST_MULTIPLICATION;
   ME->multiplication = M;
   parser_state->state = OK;
@@ -156,6 +167,7 @@ multiplicative_expression(ME) ::= negation(N).
 {
   printf("%s", "multiplicative_expression\n");
   ME = malloc(sizeof(struct multiplicative_expression));
+  ME->type = N_MULTIPLICATIVE_EXPRESSION;
   ME->alternative = AST_NEGATION;
   ME->negation = N;
   parser_state->state = OK;
@@ -165,6 +177,7 @@ multiplication(M) ::= negation(N0) MULT negation(N1).
 {
   printf("%s", "multiplication\n");
   M = malloc(sizeof(struct multiplication));
+  M->type = N_MULTIPLICATION;
   M->alternative = AST_MULTIPLICATION;
   M->negation0 = N0;
   M->negation1 = N1;
@@ -174,6 +187,7 @@ multiplication(M) ::= negation(N0) DIV negation(N1).
 {
   printf("%s", "multiplication\n");
   M = malloc(sizeof(struct multiplication));
+  M->type = N_MULTIPLICATION;
   M->alternative = AST_DIVISION;
   M->negation0 = N0;
   M->negation1 = N1;
@@ -184,6 +198,7 @@ negation(NL) ::= SUB negation(NR).
 {
   printf("%s", "negation\n");
   NL = malloc(sizeof(struct negation));
+  NL->type = N_NEGATION;
   NL->alternative = AST_NEGATION;
   NL->negation = NR;
   parser_state->state = OK;
@@ -192,6 +207,7 @@ negation(N) ::= primary_expression(PE).
 {
   printf("%s", "negation\n");
   N = malloc(sizeof(struct negation));
+  N->type = N_NEGATION;
   N->alternative = AST_PRIMARY_EXPRESSION;
   N->primary_expression = PE;
   parser_state->state = OK;
@@ -201,6 +217,7 @@ primary_expression(PE) ::= LPAREN atomic_expression(AE) RPAREN.
 {
   printf("%s", "(primary_expression)\n");
   PE = malloc(sizeof(struct primary_expression));
+  PE->type = N_PRIMARY_EXPRESSION;
   PE->alternative = AST_ATOMIC_EXPRESSION;
   PE->atomic_expression = AE;
   parser_state->state = OK;
@@ -209,6 +226,7 @@ primary_expression(PE) ::= atomic(A).
 {
   printf("%s", "primary_expression\n");
   PE = malloc(sizeof(struct primary_expression));
+  PE->type = N_PRIMARY_EXPRESSION;
   PE->alternative = AST_ATOMIC;
   PE->atomic = A;
   parser_state->state = OK;
@@ -218,6 +236,7 @@ atomic(A) ::= IDENTIFIER(I).
 {
   printf("%s", "atomic\n");
   A = malloc(sizeof(struct atomic));
+  A->type = N_ATOMIC;
   A->alternative = AST_IDENTIFIER;
   A->identifier = malloc(strlen(I) + 1);
   strcpy((char *)(A->identifier), I);
@@ -227,6 +246,7 @@ atomic(A) ::= NUMBER(N).
 {
   printf("%s", "atomic\n");
   A = malloc(sizeof(struct atomic));
+  A->type = N_ATOMIC;
   A->alternative = AST_NUMBER;
   A->number = atof(N);
   parser_state->state = OK;
