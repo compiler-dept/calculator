@@ -22,7 +22,6 @@ enum type {
 	N_DECLARATION,
 	N_DECLARATION_SEQUENCE,
   N_TRANSLATION_UNIT
-
 };
 
 enum alternative {
