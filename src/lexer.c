@@ -5,7 +5,7 @@ struct token *alloc_token(int value, int start, int end, const char *text)
 	struct token *t = malloc(sizeof(struct token));
 	t->value = value;
 	t->text = malloc(strlen(text) + 1);
-    t->text[strlen(text)] = '\0';
+	t->text[strlen(text)] = '\0';
 	strcpy(t->text, text);
 	t->start = start;
 	t->end = end;
@@ -84,16 +84,15 @@ struct token *next_token(struct lexer *lexer)
 		token = token_for_match(lexer->pos, ovector, COMMA);
 	} else {
 		rc = pcre_exec(lexer->re_text, NULL, lexer->pos,
-			       strlen(lexer->pos), 0, 0, ovector,
-			       30);
+			       strlen(lexer->pos), 0, 0, ovector, 30);
 		if (rc > 0) {
 			token = token_for_match(lexer->pos, ovector, TEXT);
 		}
 	}
 
-    if (token){
-        lexer->pos += ovector[1];
-    }
+	if (token) {
+		lexer->pos += ovector[1];
+	}
 
 	return token;
 }

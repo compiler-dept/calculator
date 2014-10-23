@@ -7,4 +7,4 @@
 
 void ev_translation_unit(struct translation_unit *, struct hashmap **);
 
-#endif /* end of include guard: AST_EVAL_H */
+#endif				/* end of include guard: AST_EVAL_H */

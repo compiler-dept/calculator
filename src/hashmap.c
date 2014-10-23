@@ -112,9 +112,9 @@ void *hashmap_get(struct hashmap *table, const char *key)
 		i++;
 	} while (table->values[position].key &&
 		 strcmp(table->values[position].key, key) != 0);
-	if (table->values[position].key){
-        return table->values[position].value;
-    } else {
-        return NULL;
-    }
+	if (table->values[position].key) {
+		return table->values[position].value;
+	} else {
+		return NULL;
+	}
 }

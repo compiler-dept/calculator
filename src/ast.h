@@ -23,7 +23,7 @@ enum type {
 	N_VECTOR_DECLARATION,
 	N_DECLARATION,
 	N_DECLARATION_SEQUENCE,
-  N_TRANSLATION_UNIT
+	N_TRANSLATION_UNIT
 };
 
 enum alternative {
@@ -155,8 +155,8 @@ struct translation_unit {
  */
 
 struct ast_iterator {
-  struct stack *stack;
-  void *current;
+	struct stack *stack;
+	void *current;
 };
 
 struct ast_iterator *ast_iterator_init(struct translation_unit *);

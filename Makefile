@@ -25,7 +25,7 @@ bin/calculator: bin parser $(OBJECTS)
 src/%.o: src/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-.PHONY: test clean
+.PHONY: test clean indent
 
 test: $(TESTS)
 
@@ -50,3 +50,6 @@ bin/tests/%_tests: tests/%_tests.c parser bin/tests
 
 clean:
 	rm -rf bin $(OBJECTS) $(LEMON_OBJECTS) $(TEST_OBJECTS)
+
+indent: 
+	find . \( \( -iname "*.c" -o -iname "*.h" \) -a -path ./lemon -prune \) -exec indent -linux {} \;

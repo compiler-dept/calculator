@@ -6,10 +6,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 struct hashmap_entry {
-    char* key;
-    void *value;
+	char *key;
+	void *value;
 };
 
 struct hashmap {
@@ -20,8 +19,7 @@ struct hashmap {
 
 struct hashmap *hashmap_alloc(int capacity);
 void hashmap_free(struct hashmap *table);
-void hashmap_put(struct hashmap **table, const char *key,
-		       void *value);
+void hashmap_put(struct hashmap **table, const char *key, void *value);
 void *hashmap_get(struct hashmap *table, const char *key);
 
-#endif /* end of include guard: HASHTABLE_H */
+#endif				/* end of include guard: HASHTABLE_H */
