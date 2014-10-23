@@ -1,0 +1,31 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "../src/gram.h"
+#include "../src/parser_state.h"
+#include "test_helper.h"
+#include "../src/ast.h"
+
+#test iterator_inorder
+		struct parser_state parser_state;
+		void *parser = ParseAlloc(malloc);
+
+		Parse(parser, IDENTIFIER, "a", &parser_state);
+		Parse(parser, EQ, "=", &parser_state);
+		Parse(parser, LPAREN, "(", &parser_state);
+		Parse(parser, NUMBER, "1", &parser_state);
+		Parse(parser, ADD, "+", &parser_state);
+		Parse(parser, NUMBER, "2", &parser_state);
+		Parse(parser, RPAREN, ")", &parser_state);
+		Parse(parser, MULT, "*", &parser_state);
+		Parse(parser, NUMBER, "3", &parser_state);
+		Parse(parser, SEMIC, ";", &parser_state);
+
+		Parse(parser, 0, 0, &parser_state);
+		ParseFree(parser, free);
+
+		ck_assert(parser_state.state == OK);
+
+		struct ast_iterator *iterator = ast_iterator_init(parser_state.translation_unit);
+		void *node = NULL;
+
+		//ck_assert(stack != NULL);
