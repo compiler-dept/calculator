@@ -1,4 +1,7 @@
 #include "ast_eval.h"
+#include "gram.h"
+#include "parser_state.h"
+#include "../tests/test_helper.h"
 
 double ev_atomic_expression(struct atomic_expression *, struct hashmap **);
 
@@ -8,7 +11,7 @@ double ev_atomic(struct atomic *node, struct hashmap **mappings)
 	if (node->alternative == ALT_NUMBER) {
 		value = node->number;
 	} else {
-		value = *((double *)hashmap_get(mappings, node->identifier));
+		value = *((double *)hashmap_get(*mappings, node->identifier));
 	}
 	return value;
 }
@@ -126,3 +129,4 @@ void ev_translation_unit(struct translation_unit *node,
 {
     ev_declaration_sequence(node->declaration_sequence, mappings);
 }
+

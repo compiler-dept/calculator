@@ -15,6 +15,8 @@ TEST_OBJECTS=$(patsubst %.check, %.o, $(TEST_SOURCES)) \
 	$(patsubst %.check, %.c, $(TEST_SOURCES))
 TESTS=$(patsubst %.check, bin/%, $(TEST_SOURCES))
 
+.PRECIOUS: $(TESTS)
+
 all: bin/calculator
 
 bin/calculator: bin parser $(OBJECTS)
@@ -43,7 +45,7 @@ tests/%_tests.c: tests/%_tests.check
 	checkmk $< > $@
 
 bin/tests/%_tests: tests/%_tests.c parser bin/tests
-	$(CC) $(CFLAGS) `pkg-config --cflags --libs check` -o $@ $< src/gram.c src/hashmap.c src/stack.c
+	$(CC) $(CFLAGS) `pkg-config --cflags --libs check` -o $@ $< src/gram.c src/hashmap.c src/stack.c src/ast_eval.c
 	$@
 
 clean:

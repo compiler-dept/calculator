@@ -36,6 +36,7 @@ translation_unit(TU) ::= declaration_sequence(DS).
   TU = malloc(sizeof(struct translation_unit));
   TU->alternative = ALT_DECLARATION_SEQUENCE;
   TU->declaration_sequence = DS;
+  parser_state->translation_unit = TU; 
 }
 translation_unit ::= error.
 {

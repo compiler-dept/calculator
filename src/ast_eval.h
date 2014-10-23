@@ -5,6 +5,6 @@
 #include "ast.h"
 #include "hashmap.h"
 
-double ev_translation_unit(struct translation_unit *, struct hashmap **);
+void ev_translation_unit(struct translation_unit *, struct hashmap **);
 
 #endif /* end of include guard: AST_EVAL_H */
