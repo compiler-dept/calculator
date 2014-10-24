@@ -47,7 +47,7 @@ translation_unit ::= error.
   printf("%s", "Error handler\n");
 }
 
-declaration_sequence(NODE) ::= declaration(D) declaration_sequence(DSR).
+declaration_sequence(NODE) ::= declaration(D) declaration_sequence(DS).
 {
   NODE = malloc(sizeof(struct node));
   NODE->type = N_DECLARATION_SEQUENCE;
@@ -55,7 +55,7 @@ declaration_sequence(NODE) ::= declaration(D) declaration_sequence(DSR).
   NODE->childc = 2;
   NODE->childv = malloc(2 * sizeof(struct node *));
   NODE->childv[0] = D;
-  NODE->childv[1] = DSR;
+  NODE->childv[1] = DS;
 }
 
 declaration_sequence(NODE) ::= declaration(D).
@@ -194,7 +194,6 @@ multiplication(NODE) ::= negation(N0) MULT negation(N1).
   NODE->childv[0] = N0;
   NODE->childv[1] = N1;
 }
-
 multiplication(NODE) ::= negation(N0) DIV negation(N1).
 {
   NODE = malloc(sizeof(struct node));
@@ -252,7 +251,7 @@ atomic(NODE) ::= IDENTIFIER(I).
   NODE->alternative = ALT_IDENTIFIER;
   NODE->payload.atomic.identifier = malloc(strlen(I) + 1);
   strcpy((char *)(NODE->payload.atomic.identifier), I);
-  NODE->childv = 0;
+  NODE->childc = 0;
 }
 
 atomic(NODE) ::= NUMBER(N).
@@ -261,5 +260,5 @@ atomic(NODE) ::= NUMBER(N).
   NODE->type = N_ATOMIC;
   NODE->alternative = ALT_NUMBER;
   NODE->payload.atomic.number = atof(N);
-  NODE->childv = 0;
+  NODE->childc = 0;
 }
