@@ -3,18 +3,31 @@
 #include "../src/stack.h"
 
 #test push_pop_equality
-    int values[] = {0,1,2,3,4,5,6,7,8,9};    
-	struct stack *stack = NULL;
+    int values[] = {0,1,2,3,4,5,6,7,8,9};
+    struct stack *stack = NULL;
 
-    for (int i = 0; i < 10; i++){
+    for (int i = 0; i < 10; i++)
+    {
         stack_push(&stack, values + i);
     }
 
     ck_assert(stack != NULL);
 
-    for (int i = 9; i > 2; i--){
-        int *val = (int*) stack_pop(&stack);
+    for (int i = 9; i > 2; i--)
+    {
+        int *val = (int *)stack_pop(&stack);
         ck_assert(val == values + i);
     }
 
-    stack_free(stack);
+    stack_free(&stack);
+
+#test free_empty_stack
+    struct stack *stack = NULL;
+    stack_free(&stack);
+
+    ck_assert(stack == NULL);
+
+#test pop_from_empty_stack
+    struct stack *stack = NULL;
+
+    ck_assert(stack_pop(&stack) == NULL);
