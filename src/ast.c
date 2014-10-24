@@ -1,6 +1,6 @@
 #include "ast.h"
 
-struct node *node_factory(enum type type, enum alternative alternative)
+/*struct node *node_factory(enum type type, enum alternative alternative)
 {
 	struct node *node = malloc(sizeof(struct node));
 	node->type = type;
@@ -39,7 +39,7 @@ struct node *node_factory(enum type type, enum alternative alternative)
 			node->atomic_expression = malloc(sizeof(struct atomic_expression));
 			node->atomic_expression->alternative = alternative;
 			break;
-		/*case N_COMPONENTS:
+		case N_COMPONENTS:
 			node->atomic = malloc(sizeof(struct atomic));
 			node->atomic->alternative = alternative;
 			break;
@@ -66,15 +66,15 @@ struct node *node_factory(enum type type, enum alternative alternative)
 		case N_VECTOR_EXPRESSION:
 			node->atomic = malloc(sizeof(struct atomic));
 			node->atomic->alternative = alternative;
-			break;*/
+			break;
 		case N_SCALAR_DECLARATION:
 			node->scalar_declaration = malloc(sizeof(struct scalar_declaration));
 			node->scalar_declaration->alternative = alternative;
 			break;
-		/*case N_VECTOR_DECLARATION:
+		case N_VECTOR_DECLARATION:
 			node->atomic = malloc(sizeof(struct atomic));
 			node->atomic->alternative = alternative;
-			break;*/
+			break;
 		case N_DECLARATION:
 			node->declaration = malloc(sizeof(struct declaration));
 			node->declaration->alternative = alternative;
@@ -92,12 +92,12 @@ struct node *node_factory(enum type type, enum alternative alternative)
 	}
 
 	return node;
-}
+}*/
 
-struct ast_iterator *ast_iterator_init(struct translation_unit *translation_unit)
+struct ast_iterator *ast_iterator_init(struct node *node)
 {
 	struct ast_iterator *iterator = malloc(sizeof(struct ast_iterator));
-	iterator->current = translation_unit;
+	iterator->current = node;
 	iterator->stack = NULL;
 
 	return iterator;

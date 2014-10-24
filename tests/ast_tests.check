@@ -25,7 +25,7 @@
 
 		ck_assert(parser_state.state == OK);
 
-		struct ast_iterator *iterator = ast_iterator_init(parser_state.translation_unit);
+		struct ast_iterator *iterator = ast_iterator_init(parser_state.root);
 		void *node = NULL;
 
 		//ck_assert(stack != NULL);
