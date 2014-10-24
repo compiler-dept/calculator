@@ -57,72 +57,32 @@ enum alternative {
 	ALT_DIV
 };
 
-struct atomic {
-	union {
-		double number;
-		const char *identifier;
-	};
-};
-
-struct primary_expression {
-};
-
-struct negation {
-};
-
-struct multiplication {
-};
-
-struct multiplicative_expression {
-};
-
-struct addition {
-};
-
-struct additive_expression {
-};
-
-struct atomic_expression {
-};
-
-struct scalar_declaration {
-	const char *identifier;
-};
-
-struct declaration {
-};
-
-
-
 struct payload {
-    union {
-        struct atomic atomic;
-        struct primary_expression primary_expression;
-        struct negation negation;
-        struct multiplication multiplication;
-        struct multiplicative_expression multiplicative_expression;
-        struct addition addition;
-        struct additive_expression additive_expression;
-        struct atomic_expression atomic_expression;
-        struct scalar_declaration scalar_declaration;
-        struct declaration declaration;
-        struct declaration_sequence declaration_sequence;
-        struct atomic_expression atomic_expression;
-    }
-}
+	union {
+		struct atomic {
+			union {
+				double number;
+				const char *identifier;
+			};
+		} atomic;
+
+		struct scalar_declaration {
+			const char *identifier;
+		} scalar_declaration;
+    };
+};
 
 struct node {
-    enum type type;
-    enum alternative alternative;
-    struct payload payload;
-    int childc;
-    struct node **childv;
-}
+	enum type type;
+	enum alternative alternative;
+	struct payload payload;
+	int childc;
+	struct node **childv;
+};
 
 /**
  * AST iterator
  */
-
 struct ast_iterator {
 	struct stack *stack;
 	void *current;
