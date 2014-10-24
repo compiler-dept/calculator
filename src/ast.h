@@ -85,10 +85,10 @@ struct node {
  */
 struct ast_iterator {
 	struct stack *stack;
-	void *current;
+	struct node *current;
 };
 
-struct ast_iterator *ast_iterator_init(struct translation_unit *);
+struct ast_iterator *ast_iterator_init(struct node *);
 void *ast_iterator_next(struct ast_iterator *);
 
 #endif

@@ -45,11 +45,11 @@ tests/%_tests.c: tests/%_tests.check
 	checkmk $< > $@
 
 bin/tests/%_tests: tests/%_tests.c parser bin/tests
-	$(CC) $(CFLAGS) `pkg-config --cflags --libs check` -o $@ $< src/gram.c src/hashmap.c src/stack.c src/ast_eval.c
+	$(CC) $(CFLAGS) `pkg-config --cflags --libs check` -o $@ $< src/gram.c src/hashmap.c src/stack.c
 	$@
 
 clean:
 	rm -rf bin $(OBJECTS) $(LEMON_OBJECTS) $(TEST_OBJECTS)
 
-indent: 
+indent:
 	find . \( \( -iname "*.c" -o -iname "*.h" \) -a -path ./lemon -prune \) -exec indent -linux {} \;
