@@ -11,8 +11,7 @@ void stack_push(struct stack **stack, void *elem)
 
 void *stack_pop(struct stack **stack)
 {
-	if(*stack)
-	{
+	if(*stack) {
 		void *elem = (*stack)->head;
 		struct stack *temp = *stack;
 		*stack = (*stack)->tail;
@@ -25,10 +24,8 @@ void *stack_pop(struct stack **stack)
 
 void stack_free(struct stack **stack)
 {
-	if(*stack)
-	{
-		if((*stack)->tail)
-		{
+	if(*stack) {
+		if((*stack)->tail) {
 			stack_free(&((*stack)->tail));
 		}
 
