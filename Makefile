@@ -1,10 +1,16 @@
 CFLAGS=-g -std=gnu99
 LDFLAGS = -lpcre
+LEX=flex
 
 SOURCES=$(wildcard src/*.c)
 OBJECTS=$(patsubst src/%.c, bin/%.o, $(SOURCES))
 
 LIBCOLLECT_OBJ=$(patsubst %, bin/%, hashmap.o stack.o)
+
+LEX_SOURCES=$(wildcard src/*.l)
+LEX_OBJECTS=$(patsubst %.l, %.o, $(LEX_SOURCES)) \
+	$(patsubst %.l, %.c, $(LEX_SOURCES)) \
+	$(patsubst %.l, %.h, $(LEX_SOURCES))
 
 LEMON_SOURCES=$(wildcard src/*.y)
 LEMON_OBJECTS=$(patsubst %.y, %.o, $(LEMON_SOURCES)) \
@@ -43,6 +49,9 @@ bin/lemon: src/lemon/lemon.c bin
 parser: src/gram.y bin/lemon
 	bin/lemon T=src/lemon/lempar.c $<
 
+lexer: src/lexer.l parser
+	$(LEX) --header-file=src/lexer.h -o src/lexer.c $<
+
 tests/%_tests.c: tests/%_tests.check
 	checkmk $< > $@
 
@@ -56,9 +65,8 @@ lib:
 libcollect: $(LIBCOLLECT_OBJ) lib
 	ar -rcs lib/libcollect.a $(LIBCOLLECT_OBJ)
 	
-
 clean:
-	rm -rf bin lib $(OBJECTS) $(LEMON_OBJECTS) $(TEST_OBJECTS)
+	rm -rf bin $(OBJECTS) $(LEX_OBJECTS) $(LEMON_OBJECTS) $(TEST_OBJECTS)
 
 indent:
 	find . -not -path "*/lemon/*" \( \( -iname "*.c" -o -iname "*.h" \) \) -exec indent -linux {} \;
