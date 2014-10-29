@@ -56,7 +56,7 @@ tests/%_tests.c: tests/%_tests.check
 	checkmk $< > $@
 
 bin/tests/%_tests: tests/%_tests.c parser libcollect bin/tests
-	$(CC) $(CFLAGS) `pkg-config --cflags --libs check` -o $@ $< src/gram.c src/ast.c src/ast_eval.c -Llib -lcollect
+	$(CC) $(CFLAGS) `pkg-config --cflags --libs check` -o $@ $< src/gram.c src/ast.c src/ast_eval.c src/lexer.c -Llib -lcollect
 	$@
 
 lib:
@@ -64,7 +64,7 @@ lib:
 
 libcollect: $(LIBCOLLECT_OBJ) lib
 	ar -rcs lib/libcollect.a $(LIBCOLLECT_OBJ)
-	
+
 clean:
 	rm -rf bin $(OBJECTS) $(LEX_OBJECTS) $(LEMON_OBJECTS) $(TEST_OBJECTS)
 
