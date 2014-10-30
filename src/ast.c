@@ -1,5 +1,4 @@
 #include "ast.h"
-#include "gram.h"
 #include "parser_state.h"
 #include "../tests/test_helper.h"
 #include <stdio.h>
