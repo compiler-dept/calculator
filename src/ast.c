@@ -1,18 +1,20 @@
 #include "ast.h"
 
-struct ast_iterator *ast_iterator_init(struct translation_unit
-				       *translation_unit)
+struct ast_iterator *ast_iterator_init(struct node *node)
 {
-	struct ast_iterator *iterator = malloc(sizeof(struct ast_iterator));
+	/*
+    struct ast_iterator *iterator = malloc(sizeof(struct ast_iterator));
 	itearator->current = translation_unit;
 	iterator->stack = NULL;
 
 	return iterator;
+    */
 };
 
 void *ast_iterator_next(struct ast_iterator *iterator)
 {
-	while (current->type != N_ATOMIC) {
+	/*
+       while (current->type != N_ATOMIC) {
 		stack_push(&(iterator->stack), iterator->current);
 
 		switch (iterator->current->alternative) {
@@ -78,4 +80,5 @@ void *ast_iterator_next(struct ast_iterator *iterator)
 			// will never happen
 		}
 	}
+    */
 };

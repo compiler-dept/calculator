@@ -3,7 +3,7 @@
 #include "../src/hashmap.h"
 
 #test put_get_equality
-	struct hashmap *table = hashmap_alloc(4);
+	struct hashmap *table = NULL;
 
     int values[512];
     for (int i = 0; i < 512; i++){
@@ -29,7 +29,7 @@
     ck_assert(errors == 0);
 
 #test put_reassign 
-	struct hashmap *table = hashmap_alloc(4);
+	struct hashmap *table = NULL;
     int values[] = {0,1,2,3,4,5,6,7,8,9};
 	for (int i = 0; i < 10; i++) {
 		char key[10];
@@ -41,5 +41,5 @@
     int size = table->size;
 	hashmap_free(table);
 
-    ck_assert(capacity == 4);
+    ck_assert(capacity == HASHMAP_INITIAL_CAPACITY);
     ck_assert(size == 2);

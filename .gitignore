@@ -5,3 +5,5 @@ gram.c
 gram.h
 tests/*.c
 *.orig
+lib
+lib/*

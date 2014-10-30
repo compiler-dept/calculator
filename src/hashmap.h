@@ -1,6 +1,10 @@
 #ifndef HASHMAP_H
-
 #define HASHMAP_H
+
+#ifndef HASHMAP_INITIAL_CAPACITY
+#warning "Initial hashmap capacity not set. Default 32 used."
+#define HASHMAP_INITIAL_CAPACITY 32
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,7 +21,6 @@ struct hashmap {
 	struct hashmap_entry *values;
 };
 
-struct hashmap *hashmap_alloc(int capacity);
 void hashmap_free(struct hashmap *table);
 void hashmap_put(struct hashmap **table, const char *key, void *value);
 void *hashmap_get(struct hashmap *table, const char *key);
