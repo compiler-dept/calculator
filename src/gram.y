@@ -158,7 +158,7 @@ addition(NODE) ::= multiplicative_expression(ME0) SUB multiplicative_expression(
 {
   NODE = malloc(sizeof(struct node));
   NODE->type = N_ADDITION;
-  NODE->alternative = ALT_ADD;
+  NODE->alternative = ALT_SUB;
   NODE->childc = 2;
   NODE->childv = malloc(2 * sizeof(struct node *));
   NODE->childv[0] = ME0;

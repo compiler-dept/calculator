@@ -17,7 +17,7 @@ char *AST_TYPE_NAMES[] =
 struct node *node_next_sibling(struct node *node, struct node *parent)
 {
 	if (node && parent) {
-		for (int i = parent->childc; i > 0; i--) {
+		for (int i = parent->childc - 1; i > 0; i--) {
 			if (parent->childv[i - 1] == node) {
 				return parent->childv[i];
 			}

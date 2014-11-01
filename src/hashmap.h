@@ -2,7 +2,6 @@
 #define HASHMAP_H
 
 #ifndef HASHMAP_INITIAL_CAPACITY
-#warning "Initial hashmap capacity not set. Default 32 used."
 #define HASHMAP_INITIAL_CAPACITY 32
 #endif
 
