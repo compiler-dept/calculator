@@ -11,7 +11,11 @@ void stack_push(struct stack **stack, void *elem)
 
 void *stack_peek(struct stack *stack)
 {
-	return stack->head;
+    if (stack){
+    	return stack->head;
+    } else {
+        return NULL;
+    }
 }
 
 void *stack_pop(struct stack **stack)
@@ -22,9 +26,9 @@ void *stack_pop(struct stack **stack)
 		*stack = (*stack)->tail;
 		free(temp);
 		return elem;
-	}
-
-	return NULL;
+	} else {
+    	return NULL;
+    }
 }
 
 void stack_free(struct stack **stack)

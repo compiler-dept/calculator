@@ -16,9 +16,11 @@ char *AST_TYPE_NAMES[] =
 
 struct node *node_next_sibling(struct node *node, struct node *parent)
 {
-	for (int i = parent->childc; i > 0; i--) {
-		if (parent->childv[i - 1] == node) {
-			return parent->childv[i];
+	if (node && parent) {
+		for (int i = parent->childc; i > 0; i--) {
+			if (parent->childv[i - 1] == node) {
+				return parent->childv[i];
+			}
 		}
 	}
 
@@ -52,18 +54,9 @@ struct node *ast_iterator_next_postorder(struct ast_iterator *iterator)
 		    node_next_sibling(next, stack_peek(iterator->stack));
 
 	} else {
-		if (iterator->stack) {
-			next = (struct node *)stack_pop(&iterator->stack);
-			if (iterator->stack) {
-				iterator->current =
-				    node_next_sibling(next,
-						      stack_peek(iterator->stack));
-			} else {
-                iterator->current = NULL;
-            }
-		} else {
-			return NULL;
-		}
+		next = (struct node *)stack_pop(&iterator->stack);
+		iterator->current =
+		    node_next_sibling(next, stack_peek(iterator->stack));
 	}
 
 	return next;
@@ -77,4 +70,3 @@ struct node *ast_iterator_next(struct ast_iterator *iterator)
 		break;
 	}
 }
-
