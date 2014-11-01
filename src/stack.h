@@ -7,6 +7,7 @@ struct stack {
 };
 
 void stack_push(struct stack **, void *);
+void *stack_peek(struct stack *);
 void *stack_pop(struct stack **);
 void stack_free(struct stack **);
 
