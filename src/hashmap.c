@@ -62,13 +62,15 @@ struct hashmap *clone_and_double(struct hashmap *table)
 }
 
 /**
- * @brief Insert value into hash table.
+ * @brief Insert value into hash table. If *table is NULL, allocate new hashmap.
  * @detail Insert using quadratic probing as collision strategy.
  * Double capacity when size > (0.7 * capacity).
  */
 void hashmap_put(struct hashmap **table, const char *key, void *value)
 {
-	if ((*table)->size > 0.7 * (*table)->capacity) {
+    if (*table == NULL){
+        *table = hashmap_alloc(HASHMAP_INITIAL_CAPACITY);
+    } else if ((*table)->size > 0.7 * (*table)->capacity) {
 		struct hashmap *doubled_table = clone_and_double(*table);
 		hashmap_free(*table);
 		*table = doubled_table;

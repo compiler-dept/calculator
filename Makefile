@@ -2,7 +2,9 @@ CFLAGS=-g -std=gnu99
 LDFLAGS = -lpcre
 
 SOURCES=$(wildcard src/*.c)
-OBJECTS=$(patsubst %.c, %.o, $(SOURCES))
+OBJECTS=$(patsubst src/%.c, bin/%.o, $(SOURCES))
+
+LIBCOLLECT_OBJ=$(patsubst %, bin/%, hashmap.o stack.o)
 
 LEMON_SOURCES=$(wildcard src/*.y)
 LEMON_OBJECTS=$(patsubst %.y, %.o, $(LEMON_SOURCES)) \
@@ -22,7 +24,7 @@ all: bin/calculator
 bin/calculator: bin parser $(OBJECTS)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJECTS) src/gram.o
 
-src/%.o: src/%.c
+bin/%.o: src/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 .PHONY: test clean indent
@@ -44,12 +46,19 @@ parser: src/gram.y bin/lemon
 tests/%_tests.c: tests/%_tests.check
 	checkmk $< > $@
 
-bin/tests/%_tests: tests/%_tests.c parser bin/tests
-	$(CC) $(CFLAGS) `pkg-config --cflags --libs check` -o $@ $< src/gram.c src/hashmap.c src/stack.c src/ast.c
+bin/tests/%_tests: tests/%_tests.c parser libcollect bin/tests
+	$(CC) $(CFLAGS) `pkg-config --cflags --libs check` -o $@ $< src/gram.c -Llib -lcollect
 	$@
 
+lib:
+	mkdir -p lib
+
+libcollect: $(LIBCOLLECT_OBJ) lib
+	ar -rcs lib/libcollect.a $(LIBCOLLECT_OBJ)
+	
+
 clean:
-	rm -rf bin $(OBJECTS) $(LEMON_OBJECTS) $(TEST_OBJECTS)
+	rm -rf bin lib $(OBJECTS) $(LEMON_OBJECTS) $(TEST_OBJECTS)
 
 indent:
 	find . \( \( -iname "*.c" -o -iname "*.h" \) -a -path ./lemon -prune \) -exec indent -linux {} \;
