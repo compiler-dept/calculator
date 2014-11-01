@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include "stack.h"
+#include "hashmap.h" 
 
 enum type {
 	N_ATOMIC = 1,
@@ -100,5 +101,6 @@ struct ast_iterator {
 
 struct ast_iterator *ast_iterator_init(struct node *, enum iterator_type type);
 struct node *ast_iterator_next(struct ast_iterator *);
+void ast_free(struct node *);
 
 #endif

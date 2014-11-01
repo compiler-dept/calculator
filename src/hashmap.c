@@ -39,9 +39,7 @@ struct hashmap *hashmap_alloc(int capacity)
 void hashmap_free(struct hashmap *table)
 {
 	for (int i = 0; i < table->capacity; i++) {
-		if (table->values[i].key) {
-			free(table->values[i].key);
-		}
+        free(table->values[i].key);
 	}
 	free(table->values);
 	free(table);
@@ -66,7 +64,7 @@ struct hashmap *clone_and_double(struct hashmap *table)
  * @detail Insert using quadratic probing as collision strategy.
  * Double capacity when size > (0.7 * capacity).
  */
-void hashmap_put(struct hashmap **table, const char *key, void *value)
+void *hashmap_put(struct hashmap **table, const char *key, void *value)
 {
 	if (*table == NULL) {
 		*table = hashmap_alloc(HASHMAP_INITIAL_CAPACITY);
@@ -89,13 +87,18 @@ void hashmap_put(struct hashmap **table, const char *key, void *value)
 		 && !(reassign =
 		      strcmp((*table)->values[position].key, key) == 0));
 
+	void *ret = NULL;
+
 	if (!reassign) {
 		(*table)->size++;
 		(*table)->values[position].key = malloc(strlen(key) + 1);
 		strcpy((*table)->values[position].key, key);
+	} else {
+		ret = (*table)->values[position].value;
 	}
 
 	(*table)->values[position].value = value;
+    return ret;
 }
 
 /**
@@ -104,7 +107,7 @@ void hashmap_put(struct hashmap **table, const char *key, void *value)
  */
 void *hashmap_get(struct hashmap *table, const char *key)
 {
-    void *value = NULL;
+	void *value = NULL;
 	if (table) {
 		unsigned long hashval = hash((char *)key);
 		unsigned long position;
@@ -119,7 +122,7 @@ void *hashmap_get(struct hashmap *table, const char *key)
 			 strcmp(table->values[position].key, key) != 0);
 		if (table->values[position].key) {
 			value = table->values[position].value;
-		} 
-	} 		
-    return value;
+		}
+	}
+	return value;
 }

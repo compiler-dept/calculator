@@ -35,7 +35,9 @@
     
     ck_assert(iterator->stack == NULL);
     ck_assert(i == 15);
+
     free(iterator);
+    ast_free(parser_state.root);
 
 #test test_ast_eval
     struct parser_state parser_state;
@@ -67,13 +69,6 @@
 
     struct hashmap *mappings = NULL;
     ast_eval(parser_state.root, &mappings);
-    
-    for (int i = 0; i<mappings->capacity; i++){
-        if (mappings->values[i].key){
-            printf("%s: %f\n", mappings->values[i].key, 
-                *((double*)mappings->values[i].value));
-        }
-    }
 
     double *val = ((double*)hashmap_get(mappings, "a"));
     ck_assert(*val == -6);
@@ -81,4 +76,11 @@
     val = ((double*)hashmap_get(mappings, "b"));
     ck_assert(*val == -5);
 
+    for (int i = 0; i<mappings->capacity; i++){
+        if (mappings->values[i].key){
+            free(mappings->values[i].value);
+        }
+    }
+
+    ast_free(parser_state.root);
     hashmap_free(mappings);

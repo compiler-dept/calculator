@@ -1,16 +1,5 @@
 #include "ast_eval.h"
 
-void ast_free(struct node *root, struct hashmap **mappings)
-{
-	struct ast_iterator *it = ast_iterator_init(root, POSTORDER);
-	struct stack *stack = NULL;
-
-	struct node *temp = NULL;
-
-	while ((temp = ast_iterator_next(it))) {
-
-	}
-}
 
 void ast_eval(struct node *root, struct hashmap **mappings)
 {
@@ -75,14 +64,18 @@ void ast_eval(struct node *root, struct hashmap **mappings)
 			val0 = stack_pop(&stack);
             val1 = malloc(sizeof(double));
             *val1 = *val0;
-			hashmap_put(mappings,
+			free(hashmap_put(mappings,
 				    temp->payload.scalar_declaration.identifier,
-				    val1);
+				    val1));
             free(val0);
 
 			break;
 		}
 	}
+
+    while ((temp = stack_pop(&stack))){
+        free(temp);
+    }
 
     free(it);
 }
