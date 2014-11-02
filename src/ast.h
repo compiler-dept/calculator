@@ -1,7 +1,9 @@
 #ifndef AST_H
 #define AST_H
 
+#include <stdlib.h>
 #include "stack.h"
+#include "hashmap.h"
 
 enum type {
 	N_ATOMIC = 1,
@@ -14,7 +16,7 @@ enum type {
 	N_ATOMIC_EXPRESSION,
 	N_COMPONENTS,
 	N_VECTOR,
-	N_VECTOR_PROMARY_EXPRESSION,
+	N_VECTOR_PRIMARY_EXPRESSION,
 	N_VECTOR_NEGATION,
 	N_VECTOR_SCALAR_MULTIPLICATION,
 	N_VECTOR_ADDITION,
@@ -25,6 +27,8 @@ enum type {
 	N_DECLARATION_SEQUENCE,
 	N_TRANSLATION_UNIT
 };
+
+extern char *AST_TYPE_NAMES[];
 
 enum alternative {
 	ALT_ATOMIC = 1,
@@ -69,7 +73,7 @@ struct payload {
 		struct scalar_declaration {
 			const char *identifier;
 		} scalar_declaration;
-    };
+	};
 };
 
 struct node {
@@ -83,12 +87,20 @@ struct node {
 /**
  * AST iterator
  */
+enum iterator_type {
+	PREORDER = 1,
+	POSTORDER,
+	INORDER
+};
+
 struct ast_iterator {
+	enum iterator_type type;
 	struct stack *stack;
 	struct node *current;
 };
 
-struct ast_iterator *ast_iterator_init(struct node *);
-void *ast_iterator_next(struct ast_iterator *);
+struct ast_iterator *ast_iterator_init(struct node *, enum iterator_type type);
+struct node *ast_iterator_next(struct ast_iterator *);
+void ast_free(struct node *);
 
 #endif

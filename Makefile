@@ -47,7 +47,7 @@ tests/%_tests.c: tests/%_tests.check
 	checkmk $< > $@
 
 bin/tests/%_tests: tests/%_tests.c parser libcollect bin/tests
-	$(CC) $(CFLAGS) `pkg-config --cflags --libs check` -o $@ $< src/gram.c -Llib -lcollect
+	$(CC) $(CFLAGS) `pkg-config --cflags --libs check` -o $@ $< src/gram.c src/ast.c src/ast_eval.c -Llib -lcollect
 	$@
 
 lib:
@@ -61,4 +61,4 @@ clean:
 	rm -rf bin lib $(OBJECTS) $(LEMON_OBJECTS) $(TEST_OBJECTS)
 
 indent:
-	find . \( \( -iname "*.c" -o -iname "*.h" \) -a -path ./lemon -prune \) -exec indent -linux {} \;
+	find . -not -path "*/lemon/*" \( \( -iname "*.c" -o -iname "*.h" \) \) -exec indent -linux {} \;

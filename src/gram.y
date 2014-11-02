@@ -34,6 +34,7 @@
 translation_unit(NODE) ::= declaration_sequence(DS).
 {
   NODE = malloc(sizeof(struct node));
+  NODE->childv = NULL;
   NODE->type = N_TRANSLATION_UNIT;
   NODE->alternative = ALT_DECLARATION_SEQUENCE;
   NODE->childc = 1;
@@ -47,20 +48,22 @@ translation_unit ::= error.
   printf("%s", "Error handler\n");
 }
 
-declaration_sequence(NODE) ::= declaration(D) declaration_sequence(DSR).
+declaration_sequence(NODE) ::= declaration(D) declaration_sequence(DS).
 {
   NODE = malloc(sizeof(struct node));
+  NODE->childv = NULL;
   NODE->type = N_DECLARATION_SEQUENCE;
   NODE->alternative = ALT_DECLARATION_SEQUENCE;
   NODE->childc = 2;
   NODE->childv = malloc(2 * sizeof(struct node *));
   NODE->childv[0] = D;
-  NODE->childv[1] = DSR;
+  NODE->childv[1] = DS;
 }
 
 declaration_sequence(NODE) ::= declaration(D).
 {
   NODE = malloc(sizeof(struct node));
+  NODE->childv = NULL;
   NODE->type = N_DECLARATION_SEQUENCE;
   NODE->alternative = ALT_DECLARATION;
   NODE->childc = 1;
@@ -72,6 +75,7 @@ declaration ::= vector_declaration SEMIC.
 declaration(NODE) ::= scalar_declaration(SD) SEMIC.
 {
   NODE = malloc(sizeof(struct node));
+  NODE->childv = NULL;
   NODE->type = N_DECLARATION;
   NODE->alternative = ALT_SCALAR_DECLARATION;
   NODE->childc = 1;
@@ -84,6 +88,7 @@ vector_declaration::= IDENTIFIER EQ vector_expression.
 scalar_declaration(NODE) ::= IDENTIFIER(I) EQ atomic_expression(AE).
 {
   NODE = malloc(sizeof(struct node));
+  NODE->childv = NULL;
   NODE->type = N_SCALAR_DECLARATION;
   NODE->alternative = ALT_ATOMIC_EXPRESSION;
   NODE->payload.atomic.identifier = malloc(strlen(I) + 1);
@@ -117,6 +122,7 @@ components ::= atomic_expression.
 atomic_expression(NODE) ::= additive_expression(ADE).
 {
   NODE = malloc(sizeof(struct node));
+  NODE->childv = NULL;
   NODE->type = N_ATOMIC_EXPRESSION;
   NODE->alternative = ALT_ADDITIVE_EXPRESSION;
   NODE->childc = 1;
@@ -127,6 +133,7 @@ atomic_expression(NODE) ::= additive_expression(ADE).
 additive_expression(NODE) ::= addition(A).
 {
   NODE = malloc(sizeof(struct node));
+  NODE->childv = NULL;
   NODE->type = N_ADDITIVE_EXPRESSION;
   NODE->alternative = ALT_ADDITION;
   NODE->childc = 1;
@@ -137,6 +144,7 @@ additive_expression(NODE) ::= addition(A).
 additive_expression(NODE) ::= multiplicative_expression(ME).
 {
   NODE = malloc(sizeof(struct node));
+  NODE->childv = NULL;
   NODE->type = N_ADDITIVE_EXPRESSION;
   NODE->alternative = ALT_MULTIPLICATIVE_EXPRESSION;
   NODE->childc = 1;
@@ -147,6 +155,7 @@ additive_expression(NODE) ::= multiplicative_expression(ME).
 addition(NODE) ::= multiplicative_expression(ME0) ADD multiplicative_expression(ME1).
 {
   NODE = malloc(sizeof(struct node));
+  NODE->childv = NULL;
   NODE->type = N_ADDITION;
   NODE->alternative = ALT_ADD;
   NODE->childc = 2;
@@ -157,8 +166,9 @@ addition(NODE) ::= multiplicative_expression(ME0) ADD multiplicative_expression(
 addition(NODE) ::= multiplicative_expression(ME0) SUB multiplicative_expression(ME1).
 {
   NODE = malloc(sizeof(struct node));
+  NODE->childv = NULL;
   NODE->type = N_ADDITION;
-  NODE->alternative = ALT_ADD;
+  NODE->alternative = ALT_SUB;
   NODE->childc = 2;
   NODE->childv = malloc(2 * sizeof(struct node *));
   NODE->childv[0] = ME0;
@@ -168,6 +178,7 @@ addition(NODE) ::= multiplicative_expression(ME0) SUB multiplicative_expression(
 multiplicative_expression(NODE) ::= multiplication(M).
 {
   NODE = malloc(sizeof(struct node));
+  NODE->childv = NULL;
   NODE->type = N_MULTIPLICATIVE_EXPRESSION;
   NODE->alternative = ALT_MULTIPLICATION;
   NODE->childc = 1;
@@ -177,6 +188,7 @@ multiplicative_expression(NODE) ::= multiplication(M).
 multiplicative_expression(NODE) ::= negation(N).
 {
   NODE = malloc(sizeof(struct node));
+  NODE->childv = NULL;
   NODE->type = N_MULTIPLICATIVE_EXPRESSION;
   NODE->alternative = ALT_NEGATION;
   NODE->childc = 1;
@@ -187,6 +199,7 @@ multiplicative_expression(NODE) ::= negation(N).
 multiplication(NODE) ::= negation(N0) MULT negation(N1).
 {
   NODE = malloc(sizeof(struct node));
+  NODE->childv = NULL;
   NODE->type = N_MULTIPLICATION;
   NODE->alternative = ALT_MULT;
   NODE->childc = 2;
@@ -194,10 +207,10 @@ multiplication(NODE) ::= negation(N0) MULT negation(N1).
   NODE->childv[0] = N0;
   NODE->childv[1] = N1;
 }
-
 multiplication(NODE) ::= negation(N0) DIV negation(N1).
 {
   NODE = malloc(sizeof(struct node));
+  NODE->childv = NULL;
   NODE->type = N_MULTIPLICATION;
   NODE->alternative = ALT_DIV;
   NODE->childc = 2;
@@ -209,6 +222,7 @@ multiplication(NODE) ::= negation(N0) DIV negation(N1).
 negation(NODE) ::= SUB negation(NR).
 {
   NODE = malloc(sizeof(struct node));
+  NODE->childv = NULL;
   NODE->type = N_NEGATION;
   NODE->alternative = ALT_NEGATION;
   NODE->childc = 1;
@@ -218,6 +232,7 @@ negation(NODE) ::= SUB negation(NR).
 negation(NODE) ::= primary_expression(PE).
 {
   NODE = malloc(sizeof(struct node));
+  NODE->childv = NULL;
   NODE->type = N_NEGATION;
   NODE->alternative = ALT_PRIMARY_EXPRESSION;
   NODE->childc = 1;
@@ -228,6 +243,7 @@ negation(NODE) ::= primary_expression(PE).
 primary_expression(NODE) ::= LPAREN atomic_expression(AE) RPAREN.
 {
   NODE = malloc(sizeof(struct node));
+  NODE->childv = NULL;
   NODE->type = N_PRIMARY_EXPRESSION;
   NODE->alternative = ALT_ATOMIC_EXPRESSION;
   NODE->childc = 1;
@@ -238,6 +254,7 @@ primary_expression(NODE) ::= LPAREN atomic_expression(AE) RPAREN.
 primary_expression(NODE) ::= atomic(A).
 {
   NODE = malloc(sizeof(struct node));
+  NODE->childv = NULL;
   NODE->type = N_PRIMARY_EXPRESSION;
   NODE->alternative = ALT_ATOMIC;
   NODE->childc = 1;
@@ -248,18 +265,20 @@ primary_expression(NODE) ::= atomic(A).
 atomic(NODE) ::= IDENTIFIER(I).
 {
   NODE = malloc(sizeof(struct node));
+  NODE->childv = NULL;
   NODE->type = N_ATOMIC;
   NODE->alternative = ALT_IDENTIFIER;
   NODE->payload.atomic.identifier = malloc(strlen(I) + 1);
   strcpy((char *)(NODE->payload.atomic.identifier), I);
-  NODE->childv = 0;
+  NODE->childc = 0;
 }
 
 atomic(NODE) ::= NUMBER(N).
 {
   NODE = malloc(sizeof(struct node));
+  NODE->childv = NULL;
   NODE->type = N_ATOMIC;
   NODE->alternative = ALT_NUMBER;
   NODE->payload.atomic.number = atof(N);
-  NODE->childv = 0;
+  NODE->childc = 0;
 }

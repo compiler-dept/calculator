@@ -1,84 +1,98 @@
 #include "ast.h"
+#include "gram.h"
+#include "parser_state.h"
+#include "../tests/test_helper.h"
+#include <stdio.h>
 
-struct ast_iterator *ast_iterator_init(struct node *node)
+char *AST_TYPE_NAMES[] =
+    { "Atomic", "Primary_Expression", "Negation", "Multiplication",
+	"Multiplicative_Expression", "Addition", "Additive_Expression",
+	"Atomic_Expression", "Components", "Vector",
+	"Vector_Primary_Expression", "Vector_Negation",
+	"Vector_Scalar_Multiplication", "Vector_Addition",
+	"Vector_Expression", "Scalar_Declaration", "Vector_Declaration",
+	"Declaration", "Declaration_Sequence", "Translation_Unit"
+};
+
+struct node *node_next_sibling(struct node *node, struct node *parent)
 {
-	/*
-    struct ast_iterator *iterator = malloc(sizeof(struct ast_iterator));
-	itearator->current = translation_unit;
+	if (node && parent) {
+		for (int i = parent->childc - 1; i > 0; i--) {
+			if (parent->childv[i - 1] == node) {
+				return parent->childv[i];
+			}
+		}
+	}
+
+	return NULL;
+}
+
+struct ast_iterator *ast_iterator_init(struct node *node,
+				       enum iterator_type type)
+{
+	struct ast_iterator *iterator = malloc(sizeof(struct ast_iterator));
+	iterator->type = type;
+	iterator->current = node;
 	iterator->stack = NULL;
 
 	return iterator;
-    */
-};
+}
 
-void *ast_iterator_next(struct ast_iterator *iterator)
+struct node *ast_iterator_next_postorder(struct ast_iterator *iterator)
 {
-	/*
-       while (current->type != N_ATOMIC) {
-		stack_push(&(iterator->stack), iterator->current);
+	struct node *next = NULL;
 
-		switch (iterator->current->alternative) {
-		case ALT_ATOMIC:
-			itarator->current = iterator->current->atomic;
-			break;
-		case ALT_PRIMARY_EXPRESSION:
-			itarator->current =
-			    iterator->current->atomic_expression;
-			break;
-		case ALT_NEGATION:
-			itarator->current = iterator->current->negation;
-			break;
-		case ALT_MULTIPLICATION:
-			itarator->current = iterator->current->multiplication;
-			break;
-		case ALT_MULTIPLICATIVE_EXPRESSION:
-			itarator->current = iterator->current->break;
-		case ALT_ADDITION:
-			itarator->current = iterator->current->break;
-		case ALT_ADDITIVE_EXPRESSION:
-			itarator->current = iterator->current->break;
-		case ALT_ATOMIC_EXPRESSION:
-			itarator->current = iterator->current->break;
-		case ALT_COMPONENTS:
-			itarator->current = iterator->current->break;
-		case ALT_VECTOR:
-			itarator->current = iterator->current->break;
-		case ALT_VECTOR_PROMARY_EXPRESSION:
-			itarator->current = iterator->current->break;
-		case ALT_VECTOR_NEGATION:
-			itarator->current = iterator->current->break;
-		case:
- ALT_VECTOR_SCALAR_MULTIPLICATION:
-			itarator->current = iterator->current->break;
-		case ALT_VECTOR_ADDITION:
-			itarator->current = iterator->current->break;
-		case ALT_VECTOR_EXPRESSION:
-			itarator->current = iterator->current->break;
-		case ALT_SCALAR_DECLARATION:
-			itarator->current = iterator->current->break;
-		case ALT_VECTOR_DECLARATION:
-			itarator->current = iterator->current->break;
-		case ALT_DECLARATION:
-			itarator->current = iterator->current->break;
-		case ALT_DECLARATION_SEQUENCE:
-			itarator->current = iterator->current->break;
-		case ALT_TRANSLATION_UNIT:
-			itarator->current = iterator->current->break;
-		case ALT_IDENTIFIER:
-			itarator->current = iterator->current->break;
-		case ALT_NUMBER:
-			itarator->current = iterator->current->break;
-		case ALT_ADD:
-			itarator->current = iterator->current->break;
-		case ALT_SUB:
-			itarator->current = iterator->current->break;
-		case ALT_MULT:
-			itarator->current = iterator->current->break;
-		case ALT_DIV:
-			itarator->current = iterator->current->break;
-		default:
-			// will never happen
+	if (iterator->current) {
+		while (iterator->current->childc > 0) {
+			stack_push(&iterator->stack, iterator->current);
+			iterator->current = iterator->current->childv[0];
 		}
+
+		next = iterator->current;
+
+		iterator->current =
+		    node_next_sibling(next, stack_peek(iterator->stack));
+
+	} else {
+		next = (struct node *)stack_pop(&iterator->stack);
+		iterator->current =
+		    node_next_sibling(next, stack_peek(iterator->stack));
 	}
-    */
-};
+
+	return next;
+}
+
+struct node *ast_iterator_next(struct ast_iterator *iterator)
+{
+	switch (iterator->type) {
+	case POSTORDER:
+		return ast_iterator_next_postorder(iterator);
+		break;
+	}
+}
+
+void ast_free(struct node *root)
+{
+	struct ast_iterator *it = ast_iterator_init(root, POSTORDER);
+	struct stack *stack = NULL;
+
+	struct node *temp = NULL;
+
+	while ((temp = ast_iterator_next(it))) {
+		switch (temp->type) {
+		case N_ATOMIC:
+			if (temp->alternative == ALT_IDENTIFIER) {
+				free((char *)temp->payload.atomic.identifier);
+			}
+			break;
+		case N_SCALAR_DECLARATION:
+			free((char *)temp->payload.scalar_declaration.
+			     identifier);
+			break;
+		}
+		free(temp->childv);
+		free(temp);
+	}
+
+	free(it);
+}
