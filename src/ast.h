@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 #include "stack.h"
-#include "hashmap.h" 
+#include "hashmap.h"
 
 enum type {
 	N_ATOMIC = 1,

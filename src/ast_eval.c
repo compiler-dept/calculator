@@ -1,6 +1,5 @@
 #include "ast_eval.h"
 
-
 void ast_eval(struct node *root, struct hashmap **mappings)
 {
 	struct ast_iterator *it = ast_iterator_init(root, POSTORDER);
@@ -21,8 +20,8 @@ void ast_eval(struct node *root, struct hashmap **mappings)
 				val0 = hashmap_get(*mappings,
 						   temp->payload.
 						   atomic.identifier);
-                val1 = malloc(sizeof(double));
-                *val1 = *val0;
+				val1 = malloc(sizeof(double));
+				*val1 = *val0;
 				stack_push(&stack, val1);
 			}
 
@@ -62,20 +61,20 @@ void ast_eval(struct node *root, struct hashmap **mappings)
 			break;
 		case N_SCALAR_DECLARATION:
 			val0 = stack_pop(&stack);
-            val1 = malloc(sizeof(double));
-            *val1 = *val0;
+			val1 = malloc(sizeof(double));
+			*val1 = *val0;
 			free(hashmap_put(mappings,
-				    temp->payload.scalar_declaration.identifier,
-				    val1));
-            free(val0);
+					 temp->payload.
+					 scalar_declaration.identifier, val1));
+			free(val0);
 
 			break;
 		}
 	}
 
-    while ((temp = stack_pop(&stack))){
-        free(temp);
-    }
+	while ((temp = stack_pop(&stack))) {
+		free(temp);
+	}
 
-    free(it);
+	free(it);
 }

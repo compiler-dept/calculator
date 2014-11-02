@@ -61,4 +61,4 @@ clean:
 	rm -rf bin lib $(OBJECTS) $(LEMON_OBJECTS) $(TEST_OBJECTS)
 
 indent:
-	find . \( \( -iname "*.c" -o -iname "*.h" \) -a -path ./lemon -prune \) -exec indent -linux {} \;
+	find . -not -path "*/lemon/*" \( \( -iname "*.c" -o -iname "*.h" \) \) -exec indent -linux {} \;

@@ -11,4 +11,4 @@ void *stack_peek(struct stack *);
 void *stack_pop(struct stack **);
 void stack_free(struct stack **);
 
-#endif /* end of include guard: STACK_H */
+#endif				/* end of include guard: STACK_H */

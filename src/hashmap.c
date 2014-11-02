@@ -39,7 +39,7 @@ struct hashmap *hashmap_alloc(int capacity)
 void hashmap_free(struct hashmap *table)
 {
 	for (int i = 0; i < table->capacity; i++) {
-        free(table->values[i].key);
+		free(table->values[i].key);
 	}
 	free(table->values);
 	free(table);
@@ -98,7 +98,7 @@ void *hashmap_put(struct hashmap **table, const char *key, void *value)
 	}
 
 	(*table)->values[position].value = value;
-    return ret;
+	return ret;
 }
 
 /**

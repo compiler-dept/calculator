@@ -7,5 +7,4 @@
 
 void ast_eval(struct node *, struct hashmap **);
 
-
-#endif /* end of include guard: AST_EVAL_H */
+#endif				/* end of include guard: AST_EVAL_H */

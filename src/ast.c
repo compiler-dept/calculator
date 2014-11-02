@@ -81,17 +81,18 @@ void ast_free(struct node *root)
 	while ((temp = ast_iterator_next(it))) {
 		switch (temp->type) {
 		case N_ATOMIC:
-            if (temp->alternative == ALT_IDENTIFIER){
-                free((char *)temp->payload.atomic.identifier);
-            }
+			if (temp->alternative == ALT_IDENTIFIER) {
+				free((char *)temp->payload.atomic.identifier);
+			}
 			break;
-        case N_SCALAR_DECLARATION:
-            free((char *)temp->payload.scalar_declaration.identifier);
-            break;
+		case N_SCALAR_DECLARATION:
+			free((char *)temp->payload.scalar_declaration.
+			     identifier);
+			break;
 		}
-        free(temp->childv);
-        free(temp);
+		free(temp->childv);
+		free(temp);
 	}
 
-    free(it);
+	free(it);
 }
