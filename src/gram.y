@@ -11,6 +11,9 @@
 %token_type { const char * }
 %token_destructor { free((char *) $$); }
 
+%left ADD SUB.
+%left MULT DIV.
+
 %type atomic { struct node * }
 %type primary_expression { struct node * }
 %type negation { struct node * }
