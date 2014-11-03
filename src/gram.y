@@ -157,7 +157,7 @@ additive_expression(NODE) ::= multiplicative_expression(ME).
   NODE->childv[0] = ME;
 }
 
-addition(NODE) ::= multiplicative_expression(ME0) ADD multiplicative_expression(ME1).
+addition(NODE) ::= additive_expression(AE) ADD multiplicative_expression(ME).
 {
   NODE = malloc(sizeof(struct node));
   NODE->childv = NULL;
@@ -165,10 +165,10 @@ addition(NODE) ::= multiplicative_expression(ME0) ADD multiplicative_expression(
   NODE->alternative = ALT_ADD;
   NODE->childc = 2;
   NODE->childv = malloc(2 * sizeof(struct node *));
-  NODE->childv[0] = ME0;
-  NODE->childv[1] = ME1;
+  NODE->childv[0] = AE;
+  NODE->childv[1] = ME;
 }
-addition(NODE) ::= multiplicative_expression(ME0) SUB multiplicative_expression(ME1).
+addition(NODE) ::= additive_expression(AE) SUB multiplicative_expression(ME).
 {
   NODE = malloc(sizeof(struct node));
   NODE->childv = NULL;
@@ -176,8 +176,8 @@ addition(NODE) ::= multiplicative_expression(ME0) SUB multiplicative_expression(
   NODE->alternative = ALT_SUB;
   NODE->childc = 2;
   NODE->childv = malloc(2 * sizeof(struct node *));
-  NODE->childv[0] = ME0;
-  NODE->childv[1] = ME1;
+  NODE->childv[0] = AE;
+  NODE->childv[1] = ME;
 }
 
 multiplicative_expression(NODE) ::= multiplication(M).
@@ -201,7 +201,7 @@ multiplicative_expression(NODE) ::= negation(N).
   NODE->childv[0] = N;
 }
 
-multiplication(NODE) ::= negation(N0) MULT negation(N1).
+multiplication(NODE) ::= multiplicative_expression(ME) MULT negation(N).
 {
   NODE = malloc(sizeof(struct node));
   NODE->childv = NULL;
@@ -209,10 +209,10 @@ multiplication(NODE) ::= negation(N0) MULT negation(N1).
   NODE->alternative = ALT_MULT;
   NODE->childc = 2;
   NODE->childv = malloc(2 * sizeof(struct node *));
-  NODE->childv[0] = N0;
-  NODE->childv[1] = N1;
+  NODE->childv[0] = ME;
+  NODE->childv[1] = N;
 }
-multiplication(NODE) ::= negation(N0) DIV negation(N1).
+multiplication(NODE) ::= multiplicative_expression(ME) DIV negation(N).
 {
   NODE = malloc(sizeof(struct node));
   NODE->childv = NULL;
@@ -220,8 +220,8 @@ multiplication(NODE) ::= negation(N0) DIV negation(N1).
   NODE->alternative = ALT_DIV;
   NODE->childc = 2;
   NODE->childv = malloc(2 * sizeof(struct node *));
-  NODE->childv[0] = N0;
-  NODE->childv[1] = N1;
+  NODE->childv[0] = ME;
+  NODE->childv[1] = N;
 }
 
 negation(NODE) ::= SUB negation(NR).

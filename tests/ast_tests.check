@@ -1,66 +1,34 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "../src/gram.h"
 #include "../src/parser_state.h"
 #include "test_helper.h"
 #include "../src/ast.h"
 #include "../src/ast_eval.h"
 
-#test test_iterator_postorder
-    struct parser_state parser_state;
-    void *parser = ParseAlloc(malloc);
-
-    Parse(parser, IDENTIFIER, "a", &parser_state);
-    Parse(parser, EQ, "=", &parser_state);
-    Parse(parser, NUMBER, "1", &parser_state);
-    Parse(parser, ADD, "+", &parser_state);
-    Parse(parser, NUMBER, "1", &parser_state);
-    Parse(parser, SEMIC, ";", &parser_state);
-
-    Parse(parser, 0, 0, &parser_state);
-    ParseFree(parser, free);
-
-    ck_assert(parser_state.state == OK);
-
-    struct ast_iterator *iterator = ast_iterator_init(parser_state.root, 
-            POSTORDER);
-
-    struct node* temp;
-
-
-    int i = 0;
-    while ((temp = ast_iterator_next(iterator))){
-        i++;
-    }
-    
-    ck_assert(iterator->stack == NULL);
-    ck_assert(i == 15);
-
-    free(iterator);
-    ast_free(parser_state.root);
-
 #test test_ast_eval
     struct parser_state parser_state;
     void *parser = ParseAlloc(malloc);
 
-    Parse(parser, IDENTIFIER, "a", &parser_state);
-    Parse(parser, EQ, "=", &parser_state);
-    Parse(parser, NUMBER, "2", &parser_state);
-    Parse(parser, MULT, "*", &parser_state);
-    Parse(parser, SUB, "-", &parser_state);
-    Parse(parser, LPAREN, "(", &parser_state);
-    Parse(parser, NUMBER, "5", &parser_state);
-    Parse(parser, SUB, "-", &parser_state);
-    Parse(parser, NUMBER, "2", &parser_state);
-    Parse(parser, RPAREN, ")", &parser_state);
-    Parse(parser, SEMIC, ";", &parser_state);
+    Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
+    Parse(parser, EQ, strdup("="), &parser_state);
+    Parse(parser, NUMBER, strdup("2"), &parser_state);
+    Parse(parser, MULT, strdup("*"), &parser_state);
+    Parse(parser, SUB, strdup("-"), &parser_state);
+    Parse(parser, LPAREN, strdup("("), &parser_state);
+    Parse(parser, NUMBER, strdup("5"), &parser_state);
+    Parse(parser, SUB, strdup("-"), &parser_state);
+    Parse(parser, NUMBER, strdup("2"), &parser_state);
+    Parse(parser, RPAREN, strdup(")"), &parser_state);
+    Parse(parser, SEMIC, strdup(";"), &parser_state);
 
-    Parse(parser, IDENTIFIER, "b", &parser_state);
-    Parse(parser, EQ, "=", &parser_state);
-    Parse(parser, IDENTIFIER, "a", &parser_state);
-    Parse(parser, ADD, "+", &parser_state);
-    Parse(parser, NUMBER, "1", &parser_state);
-    Parse(parser, SEMIC, ";", &parser_state);
+    Parse(parser, IDENTIFIER, strdup("b"), &parser_state);
+    Parse(parser, EQ, strdup("="), &parser_state);
+    Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
+    Parse(parser, ADD, strdup("+"), &parser_state);
+    Parse(parser, NUMBER, strdup("1"), &parser_state);
+    Parse(parser, SEMIC, strdup(";"), &parser_state);
 
     Parse(parser, 0, 0, &parser_state);
     ParseFree(parser, free);

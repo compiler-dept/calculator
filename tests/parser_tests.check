@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "../src/gram.h"
 #include "../src/parser_state.h"
 #include "test_helper.h"
@@ -8,10 +9,10 @@
     struct parser_state parser_state;
     void *parser = ParseAlloc(malloc);
 
-    Parse(parser, IDENTIFIER, "a", &parser_state);
-    Parse(parser, EQ, "=", &parser_state);
-    Parse(parser, NUMBER, "1", &parser_state);
-    Parse(parser, SEMIC, ";", &parser_state);
+    Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
+    Parse(parser, EQ, strdup("="), &parser_state);
+    Parse(parser, NUMBER, strdup("1"), &parser_state);
+    Parse(parser, SEMIC, strdup(";"), &parser_state);
 
     Parse(parser, 0, 0, &parser_state);
     ParseFree(parser, free);
@@ -22,14 +23,14 @@
     struct parser_state parser_state;
     void *parser = ParseAlloc(malloc);
 
-    Parse(parser, IDENTIFIER, "a", &parser_state);
-    Parse(parser, EQ, "=", &parser_state);
-    Parse(parser, LPAREN, "(", &parser_state);
-    Parse(parser, NUMBER, "1", &parser_state);
-    Parse(parser, ADD, "+", &parser_state);
-    Parse(parser, NUMBER, "1", &parser_state);
-    Parse(parser, RPAREN, ")", &parser_state);
-    Parse(parser, SEMIC, ";", &parser_state);
+    Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
+    Parse(parser, EQ, strdup("="), &parser_state);
+    Parse(parser, LPAREN, strdup("("), &parser_state);
+    Parse(parser, NUMBER, strdup("1"), &parser_state);
+    Parse(parser, ADD, strdup("+"), &parser_state);
+    Parse(parser, NUMBER, strdup("1"), &parser_state);
+    Parse(parser, RPAREN, strdup(")"), &parser_state);
+    Parse(parser, SEMIC, strdup(";"), &parser_state);
 
     Parse(parser, 0, 0, &parser_state);
     ParseFree(parser, free);
@@ -40,16 +41,16 @@
     struct parser_state parser_state;
     void *parser = ParseAlloc(malloc);
 
-    Parse(parser, IDENTIFIER, "a", &parser_state);
-    Parse(parser, EQ, "=", &parser_state);
-    Parse(parser, LPAREN, "(", &parser_state);
-    Parse(parser, NUMBER, "1", &parser_state);
-    Parse(parser, ADD, "+", &parser_state);
-    Parse(parser, NUMBER, "2", &parser_state);
-    Parse(parser, MULT, "*", &parser_state);
-    Parse(parser, NUMBER, "3", &parser_state);
-    Parse(parser, RPAREN, ")", &parser_state);
-    Parse(parser, SEMIC, ";", &parser_state);
+    Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
+    Parse(parser, EQ, strdup("="), &parser_state);
+    Parse(parser, LPAREN, strdup("("), &parser_state);
+    Parse(parser, NUMBER, strdup("1"), &parser_state);
+    Parse(parser, ADD, strdup("+"), &parser_state);
+    Parse(parser, NUMBER, strdup("2"), &parser_state);
+    Parse(parser, MULT, strdup("*"), &parser_state);
+    Parse(parser, NUMBER, strdup("3"), &parser_state);
+    Parse(parser, RPAREN, strdup(")"), &parser_state);
+    Parse(parser, SEMIC, strdup(";"), &parser_state);
 
     Parse(parser, 0, 0, &parser_state);
     ParseFree(parser, free);
@@ -60,16 +61,16 @@
     struct parser_state parser_state;
     void *parser = ParseAlloc(malloc);
 
-    Parse(parser, IDENTIFIER, "a", &parser_state);
-    Parse(parser, EQ, "=", &parser_state);
-    Parse(parser, LBRACKET, "[", &parser_state);
-    Parse(parser, NUMBER, "1", &parser_state);
-    Parse(parser, COMMA, ",", &parser_state);
-    Parse(parser, NUMBER, "2", &parser_state);
-    Parse(parser, COMMA, ",", &parser_state);
-    Parse(parser, NUMBER, "3", &parser_state);
-    Parse(parser, RBRACKET, "]", &parser_state);
-    Parse(parser, SEMIC, ";", &parser_state);
+    Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
+    Parse(parser, EQ, strdup("="), &parser_state);
+    Parse(parser, LBRACKET, strdup("["), &parser_state);
+    Parse(parser, NUMBER, strdup("1"), &parser_state);
+    Parse(parser, COMMA, strdup(","), &parser_state);
+    Parse(parser, NUMBER, strdup("2"), &parser_state);
+    Parse(parser, COMMA, strdup(","), &parser_state);
+    Parse(parser, NUMBER, strdup("3"), &parser_state);
+    Parse(parser, RBRACKET, strdup("]"), &parser_state);
+    Parse(parser, SEMIC, strdup(";"), &parser_state);
 
     Parse(parser, 0, 0, &parser_state);
     ParseFree(parser, free);
@@ -80,20 +81,20 @@
     struct parser_state parser_state;
     void *parser = ParseAlloc(malloc);
 
-    Parse(parser, IDENTIFIER, "a", &parser_state);
-    Parse(parser, EQ, "=", &parser_state);
-    Parse(parser, LBRACKET, "[", &parser_state);
-    Parse(parser, NUMBER, "1", &parser_state);
-    Parse(parser, COMMA, ",", &parser_state);
-    Parse(parser, NUMBER, "2", &parser_state);
-    Parse(parser, RBRACKET, "]", &parser_state);
-    Parse(parser, VECADD, "|+", &parser_state);
-    Parse(parser, LBRACKET, "[", &parser_state);
-    Parse(parser, NUMBER, "3", &parser_state);
-    Parse(parser, COMMA, ",", &parser_state);
-    Parse(parser, NUMBER, "4", &parser_state);
-    Parse(parser, RBRACKET, "]", &parser_state);
-    Parse(parser, SEMIC, ";", &parser_state);
+    Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
+    Parse(parser, EQ, strdup("="), &parser_state);
+    Parse(parser, LBRACKET, strdup("["), &parser_state);
+    Parse(parser, NUMBER, strdup("1"), &parser_state);
+    Parse(parser, COMMA, strdup(","), &parser_state);
+    Parse(parser, NUMBER, strdup("2"), &parser_state);
+    Parse(parser, RBRACKET, strdup("]"), &parser_state);
+    Parse(parser, VECADD, strdup("|+"), &parser_state);
+    Parse(parser, LBRACKET, strdup("["), &parser_state);
+    Parse(parser, NUMBER, strdup("3"), &parser_state);
+    Parse(parser, COMMA, strdup(","), &parser_state);
+    Parse(parser, NUMBER, strdup("4"), &parser_state);
+    Parse(parser, RBRACKET, strdup("]"), &parser_state);
+    Parse(parser, SEMIC, strdup(";"), &parser_state);
 
     Parse(parser, 0, 0, &parser_state);
     ParseFree(parser, free);
@@ -104,16 +105,16 @@
     struct parser_state parser_state;
     void *parser = ParseAlloc(malloc);
 
-    Parse(parser, IDENTIFIER, "a", &parser_state);
-    Parse(parser, EQ, "=", &parser_state);
-    Parse(parser, NUMBER, "2", &parser_state);
-    Parse(parser, SCMULT, "|*", &parser_state);
-    Parse(parser, LBRACKET, "[", &parser_state);
-    Parse(parser, NUMBER, "3", &parser_state);
-    Parse(parser, COMMA, ",", &parser_state);
-    Parse(parser, NUMBER, "4", &parser_state);
-    Parse(parser, RBRACKET, "]", &parser_state);
-    Parse(parser, SEMIC, ";", &parser_state);
+    Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
+    Parse(parser, EQ, strdup("="), &parser_state);
+    Parse(parser, NUMBER, strdup("2"), &parser_state);
+    Parse(parser, SCMULT, strdup("|*"), &parser_state);
+    Parse(parser, LBRACKET, strdup("["), &parser_state);
+    Parse(parser, NUMBER, strdup("3"), &parser_state);
+    Parse(parser, COMMA, strdup(","), &parser_state);
+    Parse(parser, NUMBER, strdup("4"), &parser_state);
+    Parse(parser, RBRACKET, strdup("]"), &parser_state);
+    Parse(parser, SEMIC, strdup(";"), &parser_state);
 
     Parse(parser, 0, 0, &parser_state);
     ParseFree(parser, free);
@@ -124,14 +125,14 @@
     struct parser_state parser_state;
     void *parser = ParseAlloc(malloc);
 
-    Parse(parser, IDENTIFIER, "a", &parser_state);
-    Parse(parser, EQ, "=", &parser_state);
-    Parse(parser, NUMBER, "1", &parser_state);
-    Parse(parser, SEMIC, ";", &parser_state);
-    Parse(parser, IDENTIFIER, "b", &parser_state);
-    Parse(parser, EQ, "=", &parser_state);
-    Parse(parser, NUMBER, "2", &parser_state);
-    Parse(parser, SEMIC, ";", &parser_state);
+    Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
+    Parse(parser, EQ, strdup("="), &parser_state);
+    Parse(parser, NUMBER, strdup("1"), &parser_state);
+    Parse(parser, SEMIC, strdup(";"), &parser_state);
+    Parse(parser, IDENTIFIER, strdup("b"), &parser_state);
+    Parse(parser, EQ, strdup("="), &parser_state);
+    Parse(parser, NUMBER, strdup("2"), &parser_state);
+    Parse(parser, SEMIC, strdup(";"), &parser_state);
 
     Parse(parser, 0, 0, &parser_state);
     ParseFree(parser, free);
@@ -142,25 +143,24 @@
     struct parser_state parser_state;
     void *parser = ParseAlloc(malloc);
 
-    Parse(parser, IDENTIFIER, "a", &parser_state);
-    Parse(parser, EQ, "=", &parser_state);
-    Parse(parser, LBRACKET, "[", &parser_state);
-    Parse(parser, LPAREN, "(", &parser_state);
-    Parse(parser, NUMBER, "1", &parser_state);
-    Parse(parser, ADD, "+", &parser_state);
-    Parse(parser, NUMBER, "2", &parser_state);
-    Parse(parser, RPAREN, ")", &parser_state);
-    Parse(parser, MULT, "*", &parser_state);
-    Parse(parser, NUMBER, "3", &parser_state);
-    Parse(parser, COMMA, ",", &parser_state);
-    Parse(parser, NUMBER, "2", &parser_state);
-    Parse(parser, COMMA, ",", &parser_state);
-    Parse(parser, NUMBER, "3", &parser_state);
-    Parse(parser, RBRACKET, "]", &parser_state);
-    Parse(parser, SEMIC, ";", &parser_state);
+    Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
+    Parse(parser, EQ, strdup("="), &parser_state);
+    Parse(parser, LBRACKET, strdup("["), &parser_state);
+    Parse(parser, LPAREN, strdup("("), &parser_state);
+    Parse(parser, NUMBER, strdup("1"), &parser_state);
+    Parse(parser, ADD, strdup("+"), &parser_state);
+    Parse(parser, NUMBER, strdup("2"), &parser_state);
+    Parse(parser, RPAREN, strdup(")"), &parser_state);
+    Parse(parser, MULT, strdup("*"), &parser_state);
+    Parse(parser, NUMBER, strdup("3"), &parser_state);
+    Parse(parser, COMMA, strdup(","), &parser_state);
+    Parse(parser, NUMBER, strdup("2"), &parser_state);
+    Parse(parser, COMMA, strdup(","), &parser_state);
+    Parse(parser, NUMBER, strdup("3"), &parser_state);
+    Parse(parser, RBRACKET, strdup("]"), &parser_state);
+    Parse(parser, SEMIC, strdup(";"), &parser_state);
 
     Parse(parser, 0, 0, &parser_state);
     ParseFree(parser, free);
 
     ck_assert(parser_state.state == OK);
-
