@@ -19,7 +19,7 @@ TESTS=$(patsubst %.check, bin/%, $(TEST_SOURCES))
 all: bin/calculator
 
 bin/calculator: $(OBJECTS) bin libcollect
-	$(CC) $(LDFLAGS) -o $@ $(OBJECTS)
+	$(CC) -o $@ $(OBJECTS) $(LDFLAGS) 
 
 src/calculator.o: src/calculator.c src/lexer.c
 
