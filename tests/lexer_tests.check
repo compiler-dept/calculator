@@ -1,0 +1,24 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "../src/lexer.h"
+#include "../src/gram.h"
+
+#test find_tokens
+    yyscan_t scanner;
+    yylex_init(&scanner);
+    YY_BUFFER_STATE bufferState = yy_scan_string("a = 3;", scanner);
+
+    int lex_code;
+    lex_code = yylex(scanner);
+    ck_assert(lex_code == IDENTIFIER);
+    lex_code = yylex(scanner);
+    ck_assert(lex_code == EQ);
+    lex_code = yylex(scanner);
+    ck_assert(lex_code == NUMBER);
+    lex_code = yylex(scanner);
+    ck_assert(lex_code == SEMIC);
+    lex_code = yylex(scanner);
+    ck_assert(lex_code == 0);
+
+    yy_delete_buffer(bufferState, scanner);
+    yylex_destroy(scanner);

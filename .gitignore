@@ -3,6 +3,8 @@ bin
 *.out
 gram.c
 gram.h
+lexer.c
+lexer.h
 tests/*.c
 *.orig
 lib

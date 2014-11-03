@@ -1,37 +1,36 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "gram.h"
 #include "lexer.h"
+#include "gram.h"
+#include "parser_state.h"
 
-void *ParseAlloc(void *(*allocProc) (size_t));
-void Parse(void *, int, struct token *);
-void ParseFree(void *, void (*freeProc) (void *));
+void *ParseAlloc(void *(*allocProc)(size_t));
+void Parse(void *, int, const char *, struct parser_state *);
+void ParseFree(void *, void (*freeProc)(void *));
 
 int main()
 {
-/*
-	char s[100];
+	char s[1024];
+	int r = 0;
+	int token;
+	struct parser_state parser_state;
+	yyscan_t scanner;
+	yylex_init(&scanner);
 
-	while (1) {
-		fgets(s, 100, stdin);
-        if (s[0] == '\n') {
-            break;
-        }
-		struct lexer *lexer = alloc_lexer(s);
-		if (lexer) {
-			void *shellParser = ParseAlloc(malloc);
-			struct token *t;
-			while ((t = next_token(lexer))) {
-				Parse(shellParser, t->value, t);
-                t = NULL;
-			}
+	while(1) {
+		r = scanf("%s", s);
+		YY_BUFFER_STATE bufferState = yy_scan_string(s, scanner);
 
-			Parse(shellParser, 0, 0);     // Signal end of tokens
-			ParseFree(shellParser, free);
+		int token = yylex(scanner);
+		void *shellParser = ParseAlloc(malloc);
+		while(token > 0) {
+			Parse(shellParser, token, yyget_text(scanner), &parser_state);
+    	token = yylex(scanner);
+  	}
 
-			free_lexer(lexer);
-		}
+		Parse(shellParser, 0, NULL, &parser_state);
+		ParseFree(shellParser, free);
 	}
+
 	return 0;
-*/
 }
