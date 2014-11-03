@@ -72,6 +72,10 @@ struct node *ast_iterator_next(struct ast_iterator *iterator)
 
 void ast_free(struct node *root)
 {
+    if (!root){
+        return;
+    }
+
 	struct ast_iterator *it = ast_iterator_init(root, POSTORDER);
 	struct stack *stack = NULL;
 

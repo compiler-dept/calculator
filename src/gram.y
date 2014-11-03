@@ -9,6 +9,7 @@
 }
 
 %token_type { const char * }
+%token_destructor { free((char *) $$); }
 
 %type atomic { struct node * }
 %type primary_expression { struct node * }
@@ -96,6 +97,7 @@ scalar_declaration(NODE) ::= IDENTIFIER(I) EQ atomic_expression(AE).
   NODE->childc = 1;
   NODE->childv = malloc(sizeof(struct node *));
   NODE->childv[0] = AE;
+  free((char *)I);
 }
 
 /** vector */
@@ -271,6 +273,7 @@ atomic(NODE) ::= IDENTIFIER(I).
   NODE->payload.atomic.identifier = malloc(strlen(I) + 1);
   strcpy((char *)(NODE->payload.atomic.identifier), I);
   NODE->childc = 0;
+  free((char *)I);
 }
 
 atomic(NODE) ::= NUMBER(N).
@@ -281,4 +284,5 @@ atomic(NODE) ::= NUMBER(N).
   NODE->alternative = ALT_NUMBER;
   NODE->payload.atomic.number = atof(N);
   NODE->childc = 0;
+  free((char *) N);
 }

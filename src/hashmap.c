@@ -38,6 +38,9 @@ struct hashmap *hashmap_alloc(int capacity)
  */
 void hashmap_free(struct hashmap *table)
 {
+    if (!table){
+        return;
+    }
 	for (int i = 0; i < table->capacity; i++) {
 		free(table->values[i].key);
 	}
