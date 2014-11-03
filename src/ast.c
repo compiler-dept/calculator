@@ -64,10 +64,18 @@ struct node *ast_iterator_next_postorder(struct ast_iterator *iterator)
 struct node *ast_iterator_next(struct ast_iterator *iterator)
 {
     switch (iterator->type) {
+    case PREORDER:
+        // TODO
+        break;
+    case INORDER:
+        // TODO
+        break;
     case POSTORDER:
         return ast_iterator_next_postorder(iterator);
         break;
     }
+
+    return NULL;
 }
 
 void ast_free(struct node *root)
@@ -91,6 +99,8 @@ void ast_free(struct node *root)
         case N_SCALAR_DECLARATION:
             free((char *)temp->payload.scalar_declaration.
                  identifier);
+            break;
+        default:
             break;
         }
         free(temp->childv);
