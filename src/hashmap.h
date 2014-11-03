@@ -10,14 +10,14 @@
 #include <string.h>
 
 struct hashmap_entry {
-	char *key;
-	void *value;
+    char *key;
+    void *value;
 };
 
 struct hashmap {
-	int capacity;
-	int size;
-	struct hashmap_entry *values;
+    int capacity;
+    int size;
+    struct hashmap_entry *values;
 };
 
 void hashmap_free(struct hashmap *table);

@@ -2,8 +2,8 @@
 #define STACK_H
 
 struct stack {
-	void *head;
-	struct stack *tail;
+    void *head;
+    struct stack *tail;
 };
 
 void stack_push(struct stack **, void *);

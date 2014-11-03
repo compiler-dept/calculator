@@ -14,17 +14,13 @@ TEST_OBJECTS=$(patsubst %.check, %.o, $(TEST_SOURCES)) \
 	$(patsubst %.check, %.c, $(TEST_SOURCES))
 TESTS=$(patsubst %.check, bin/%, $(TEST_SOURCES))
 
-INDENT_STYLE=-nbad -bap -nbc -bbo -hnl -br -brs -c33 -cd33 -ncdb -ce -ci4 \
-            -cli0 -d0 -di1 -nfc1 -i8 -ip0 -l80 -lp -npcs -nprs -npsl -sai \
-			            -saf -saw -ncs -nsc -sob -nfca -cp33 -ss -ts8 -il1
-
 .PRECIOUS: $(TESTS)
 .PHONY: all parser test clean indent objects
 
 all: bin/calculator
 
 bin/calculator: $(OBJECTS) bin libcollect
-	$(CC) -o $@ $(OBJECTS) $(LDFLAGS) 
+	$(CC) -o $@ $(OBJECTS) $(LDFLAGS)
 
 src/calculator.o: src/calculator.c src/lexer.c
 
@@ -62,4 +58,4 @@ clean:
 	rm -rf bin lib $(OBJECTS) src/gram.h src/gram.c src/gram.out src/lexer.c src/lexer.h
 
 indent:
-	find . \( -iname "*.c" -o -iname "*.h" \) -exec indent $(INDENT_STYLE) {} \;
+	find . \( -iname "*.c" -o -iname "*.h" \) -exec astyle --style=linux {} \;
