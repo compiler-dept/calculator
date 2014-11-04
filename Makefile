@@ -1,4 +1,4 @@
-CFLAGS=-g -std=gnu99
+CFLAGS=-g -Wall -std=c11 -Ilibcollect
 LDFLAGS=-Llibcollect -lcollect
 YACC=lemon
 LEX=flex
