@@ -1,0 +1,3 @@
+[submodule "libcollect"]
+	path = libcollect
+	url = https://github.com/compiler-dept/libcollect.git
