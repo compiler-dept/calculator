@@ -21,7 +21,7 @@
 "-"                  return SUB;
 "*"                  return MULT;
 "/"                  return DIV;
-"|+"                 return VECADD;
-"|*"                 return SCMULT;
+"|+"                 /* return VECADD */;
+"|*"                 /* return SCMULT */;
 
 %%

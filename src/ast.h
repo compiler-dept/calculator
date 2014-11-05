@@ -63,16 +63,20 @@ enum alternative {
 
 struct payload {
     union {
-        struct atomic {
+        struct {
             union {
                 double number;
                 const char *identifier;
             };
         } atomic;
 
-        struct scalar_declaration {
+        struct {
             const char *identifier;
         } scalar_declaration;
+
+        struct {
+            const char *identifier;
+        } vector_declaration;
     };
 };
 

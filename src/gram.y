@@ -22,6 +22,9 @@
 %type addition { struct node * }
 %type additive_expression { struct node * }
 %type atomic_expression { struct node * }
+%type components { struct node * }
+%type vector { struct node * }
+%type vector_declaration { struct node * }
 %type scalar_declaration { struct node * }
 %type declaration { struct node * }
 %type declaration_sequence { struct node * }
@@ -75,7 +78,16 @@ declaration_sequence(NODE) ::= declaration(D).
   NODE->childv[0] = D;
 }
 
-declaration ::= vector_declaration SEMIC.
+declaration(NODE) ::= vector_declaration(VD) SEMIC.
+{
+    NODE = malloc(sizeof(struct node));
+    NODE->childv = NULL;
+    NODE->type = N_DECLARATION;
+    NODE->alternative = ALT_VECTOR_DECLARATION;
+    NODE->childc = 1;
+    NODE->childv = malloc(sizeof(struct node *));
+    NODE->childv[0] = VD;
+}
 declaration(NODE) ::= scalar_declaration(SD) SEMIC.
 {
   NODE = malloc(sizeof(struct node));
@@ -87,7 +99,19 @@ declaration(NODE) ::= scalar_declaration(SD) SEMIC.
   NODE->childv[0] = SD;
 }
 
-vector_declaration::= IDENTIFIER EQ vector_expression.
+vector_declaration(NODE) ::= IDENTIFIER(I) EQ vector(VE).//vector_expression(VE).
+{
+    NODE = malloc(sizeof(struct node));
+    NODE->childv = NULL;
+    NODE->type = N_VECTOR_DECLARATION;
+    NODE->alternative = ALT_VECTOR; //ALT_VECTOR_EXPRESSION;
+    NODE->payload.vector_declaration.identifier = malloc(strlen(I) + 1);
+    strcpy((char *)(NODE->payload.vector_declaration.identifier), I);
+    NODE->childc = 1;
+    NODE->childv = malloc(sizeof(struct node *));
+    NODE->childv[0] = VE;
+    free((char *)I);
+}
 
 scalar_declaration(NODE) ::= IDENTIFIER(I) EQ atomic_expression(AE).
 {
@@ -95,8 +119,8 @@ scalar_declaration(NODE) ::= IDENTIFIER(I) EQ atomic_expression(AE).
   NODE->childv = NULL;
   NODE->type = N_SCALAR_DECLARATION;
   NODE->alternative = ALT_ATOMIC_EXPRESSION;
-  NODE->payload.atomic.identifier = malloc(strlen(I) + 1);
-  strcpy((char *)(NODE->payload.atomic.identifier), I);
+  NODE->payload.scalar_declaration.identifier = malloc(strlen(I) + 1);
+  strcpy((char *)(NODE->payload.scalar_declaration.identifier), I);
   NODE->childc = 1;
   NODE->childv = malloc(sizeof(struct node *));
   NODE->childv[0] = AE;
@@ -104,59 +128,78 @@ scalar_declaration(NODE) ::= IDENTIFIER(I) EQ atomic_expression(AE).
 }
 
 /** vector */
-vector_expression(NODE) ::= vector_addition(VA).
+/*vector_expression ::= vector_addition.
 {
 
 }
 
-vector_addition(NODE) ::= vector_scalar_multiplication(VSML) VECADD vector_scalar_multiplication(VSMR).
+vector_addition ::= vector_scalar_multiplication VECADD vector_scalar_multiplication.
 {
 
 }
-vector_addition(NODE) ::= vector_scalar_multiplication(VSM).
-{
-
-}
-
-vector_scalar_multiplication(NODE) ::= atomic_expression(AE) SCMULT vector_negation(VN).
-{
-
-}
-vector_scalar_multiplication(NODE) ::= vector_negation(VN).
+vector_addition ::= vector_scalar_multiplication.
 {
 
 }
 
-vector_negation(NODE) ::= SUB vector_negation(VN).
+vector_scalar_multiplication ::= atomic_expression SCMULT vector_negation.
 {
 
 }
-vector_negation(NODE) ::= vector_primary_expression(VPE).
+vector_scalar_multiplication ::= vector_negation.
 {
 
 }
 
-vector_primary_expression(NODE) ::= vector(V).
+vector_negation ::= SUB vector_negation.
 {
 
 }
-vector_primary_expression(NODE) ::= LPAREN vector_expression(VE) RPAREN.
+vector_negation ::= vector_primary_expression.
 {
 
 }
+
+vector_primary_expression ::= vector.
+{
+
+}
+vector_primary_expression ::= LPAREN vector_expression RPAREN.
+{
+
+}*/
 
 vector(NODE) ::= LBRACKET components(C) RBRACKET.
 {
-
+    NODE = malloc(sizeof(struct node));
+    NODE->childv = NULL;
+    NODE->type = N_VECTOR;
+    NODE->alternative = ALT_COMPONENTS;
+    NODE->childc = C->childc;
+    NODE->childv = C->childv;
+    free(C);
 }
 
 components(NODE) ::= atomic_expression(AE) COMMA components(C).
 {
-
+    NODE = malloc(sizeof(struct node));
+    NODE->childv = NULL;
+    NODE->type = N_COMPONENTS;
+    NODE->alternative = ALT_ATOMIC_EXPRESSION;
+    NODE->childc = C->childc + 1;
+    NODE->childv = realloc(C->childv, NODE->childc * sizeof(struct node *));
+    NODE->childv[NODE->childc - 1] = AE;
+    free(C);
 }
 components(NODE) ::= atomic_expression(AE).
 {
-
+    NODE = malloc(sizeof(struct node));
+    NODE->childv = NULL;
+    NODE->type = N_COMPONENTS;
+    NODE->alternative = ALT_ATOMIC_EXPRESSION;
+    NODE->childc = 1;
+    NODE->childv = malloc(sizeof(struct node *));
+    NODE->childv[0] = AE;
 }
 
 /** scalar */
@@ -323,5 +366,5 @@ atomic(NODE) ::= NUMBER(N).
   NODE->alternative = ALT_NUMBER;
   NODE->payload.atomic.number = atof(N);
   NODE->childc = 0;
-  free((char *) N);
+  free((char *)N);
 }
