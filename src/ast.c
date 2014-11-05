@@ -85,8 +85,6 @@ void ast_free(struct node *root)
     }
 
     struct ast_iterator *it = ast_iterator_init(root, POSTORDER);
-    struct stack *stack = NULL;
-
     struct node *temp = NULL;
 
     while ((temp = ast_iterator_next(it))) {
