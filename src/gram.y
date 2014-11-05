@@ -9,7 +9,7 @@
 }
 
 %token_type { const char * }
-%token_destructor { free((char *) $$); }
+%token_destructor { free((char *)$$); }
 
 %left ADD SUB.
 %left MULT DIV.
@@ -104,24 +104,60 @@ scalar_declaration(NODE) ::= IDENTIFIER(I) EQ atomic_expression(AE).
 }
 
 /** vector */
-vector_expression ::= vector_addition.
+vector_expression(NODE) ::= vector_addition(VA).
+{
 
-vector_addition ::= vector_scalar_multiplication VECADD vector_scalar_multiplication.
-vector_addition ::= vector_scalar_multiplication.
+}
 
-vector_scalar_multiplication ::= atomic_expression SCMULT vector_negation.
-vector_scalar_multiplication ::= vector_negation.
+vector_addition(NODE) ::= vector_scalar_multiplication(VSML) VECADD vector_scalar_multiplication(VSMR).
+{
 
-vector_negation ::= SUB vector_negation.
-vector_negation ::= vector_primary_expression.
+}
+vector_addition(NODE) ::= vector_scalar_multiplication(VSM).
+{
 
-vector_primary_expression ::= vector.
-vector_primary_expression ::= LPAREN vector_expression RPAREN.
+}
 
-vector ::= LBRACKET components RBRACKET.
+vector_scalar_multiplication(NODE) ::= atomic_expression(AE) SCMULT vector_negation(VN).
+{
 
-components ::= atomic_expression COMMA components.
-components ::= atomic_expression.
+}
+vector_scalar_multiplication(NODE) ::= vector_negation(VN).
+{
+
+}
+
+vector_negation(NODE) ::= SUB vector_negation(VN).
+{
+
+}
+vector_negation(NODE) ::= vector_primary_expression(VPE).
+{
+
+}
+
+vector_primary_expression(NODE) ::= vector(V).
+{
+
+}
+vector_primary_expression(NODE) ::= LPAREN vector_expression(VE) RPAREN.
+{
+
+}
+
+vector(NODE) ::= LBRACKET components(C) RBRACKET.
+{
+
+}
+
+components(NODE) ::= atomic_expression(AE) COMMA components(C).
+{
+
+}
+components(NODE) ::= atomic_expression(AE).
+{
+
+}
 
 /** scalar */
 atomic_expression(NODE) ::= additive_expression(ADE).

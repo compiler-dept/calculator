@@ -99,8 +99,8 @@ struct ast_iterator {
     struct node *current;
 };
 
-struct ast_iterator *ast_iterator_init(struct node *, enum iterator_type type);
-struct node *ast_iterator_next(struct ast_iterator *);
-void ast_free(struct node *);
+struct ast_iterator *ast_iterator_init(struct node *node, enum iterator_type type);
+struct node *ast_iterator_next(struct ast_iterator *iterator);
+void ast_free(struct node *node);
 
 #endif
