@@ -14,8 +14,6 @@ int main()
 {
     char *s = NULL;
     size_t len = 0;
-    int r = 0;
-    int token;
     struct parser_state parser_state;
     struct hashmap *mappings = NULL;
     yyscan_t scanner;
