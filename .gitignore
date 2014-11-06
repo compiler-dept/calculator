@@ -9,3 +9,4 @@ tests/*.c
 *.orig
 lib
 lib/*
+lemon/lemon
