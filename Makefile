@@ -1,6 +1,6 @@
 CFLAGS=-g -Wall -std=c11 -Ilibcollect
 LDFLAGS=-Llibcollect -lcollect
-YACC=lemon
+YACC=lemon/lemon
 LEX=flex
 
 NOWANTS=src/lexer.c src/gram.c src/hashmap.c src/stack.c
@@ -13,7 +13,7 @@ TEST_OBJECTS=$(patsubst %.check, %.o, $(TEST_SOURCES)) \
 TESTS=$(patsubst %.check, bin/%, $(TEST_SOURCES))
 
 .PRECIOUS: $(TESTS)
-.PHONY: all parser test clean dist-clean indent objects libcollect getexternals
+.PHONY: all parser lemon test clean dist-clean indent objects libcollect getexternals
 
 all: bin/calculator
 
@@ -22,7 +22,7 @@ bin/calculator: $(OBJECTS) bin libcollect
 
 src/calculator.o: src/calculator.c src/lexer.c
 
-parser: src/gram.y
+parser: src/gram.y lemon
 	$(YACC) $<
 
 src/lexer.c: src/lexer.l parser
@@ -42,7 +42,10 @@ bin/tests/%_tests: tests/%_tests.c src/lexer.c libcollect bin/tests
 	$@
 
 libcollect:
-	make -C libcollect
+	@- make -C libcollect
+
+lemon:
+	@- make -C lemon
 
 test: $(TESTS)
 
@@ -53,8 +56,9 @@ clean:
 	rm -rf bin lib $(OBJECTS) src/gram.h src/gram.c src/gram.out src/lexer.c src/lexer.h
 
 dist-clean:
-	make clean
-	make -C libcollect clean
+	@- make clean
+	@- make -C libcollect clean
+	@- make -C lemon clean
 
 indent:
 	find . \( -iname "*.c" -o -iname "*.h" \) -exec astyle --style=linux {} \;
