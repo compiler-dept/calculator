@@ -15,6 +15,7 @@
 %left MULT DIV.
 
 %type atomic { struct node * }
+%type vector_atomic { struct node * }
 %type primary_expression { struct node * }
 %type negation { struct node * }
 %type multiplication { struct node * }
@@ -22,6 +23,11 @@
 %type addition { struct node * }
 %type additive_expression { struct node * }
 %type atomic_expression { struct node * }
+%type vector_expression { struct node * }
+%type vector_addition { struct node * }
+%type vector_scalar_multiplication { struct node * }
+%type vector_negation { struct node * }
+%type vector_primary_expression { struct node * }
 %type components { struct node * }
 %type vector { struct node * }
 %type vector_declaration { struct node * }
@@ -128,45 +134,123 @@ scalar_declaration(NODE) ::= IDENTIFIER(I) EQ atomic_expression(AE).
 }
 
 /** vector */
-vector_expression ::= vector_addition.
+vector_expression(NODE) ::= vector_addition(VE).
 {
-
+    NODE = malloc(sizeof(struct node));
+    NODE->childv = NULL;
+    NODE->type = N_VECTOR_EXPRESSION;
+    NODE->alternative = ALT_VECTOR_ADDITION;
+    NODE->childc = 1;
+    NODE->childv = malloc(sizeof(struct node *));
+    NODE->childv[0] = VE;
 }
 
-vector_addition ::= vector_scalar_multiplication VECADD vector_scalar_multiplication.
+vector_addition(NODE) ::= vector_addition(VA) VECADD vector_scalar_multiplication(VSM).
 {
-
+    NODE = malloc(sizeof(struct node));
+    NODE->childv = NULL;
+    NODE->type = N_VECTOR_ADDITION;
+    NODE->alternative = ALT_VECADD;
+    NODE->childc = 2;
+    NODE->childv = malloc(NODE->childc * sizeof(struct node *));
+    NODE->childv[0] = VA;
+    NODE->childv[1] = VSM;
 }
-vector_addition ::= vector_scalar_multiplication.
+vector_addition(NODE) ::= vector_scalar_multiplication(VSM).
 {
-
-}
-
-vector_scalar_multiplication ::= atomic_expression SCMULT vector_negation.
-{
-
-}
-vector_scalar_multiplication ::= vector_negation.
-{
-
-}
-
-vector_negation ::= SUB vector_negation.
-{
-
-}
-vector_negation ::= vector_primary_expression.
-{
-
+    NODE = malloc(sizeof(struct node));
+    NODE->childv = NULL;
+    NODE->type = N_VECTOR_ADDITION;
+    NODE->alternative = ALT_VECTOR_SCALAR_MULTIPLICATION;
+    NODE->childc = 1;
+    NODE->childv = malloc(sizeof(struct node *));
+    NODE->childv[0] = VSM;
 }
 
-vector_primary_expression ::= vector.
+vector_scalar_multiplication(NODE) ::= atomic_expression(AE) SCMULT vector_negation(VN).
 {
-
+    NODE = malloc(sizeof(struct node));
+    NODE->childv = NULL;
+    NODE->type = N_VECTOR_SCALAR_MULTIPLICATION;
+    NODE->alternative = ALT_SCMULT;
+    NODE->childc = 2;
+    NODE->childv = malloc(NODE->childc * sizeof(struct node *));
+    NODE->childv[0] = AE;
+    NODE->childv[1] = VN;
 }
-vector_primary_expression ::= LPAREN vector_expression RPAREN.
+vector_scalar_multiplication(NODE) ::= vector_negation(VN).
 {
+    NODE = malloc(sizeof(struct node));
+    NODE->childv = NULL;
+    NODE->type = N_VECTOR_SCALAR_MULTIPLICATION;
+    NODE->alternative = ALT_VECTOR_NEGATION;
+    NODE->childc = 1;
+    NODE->childv = malloc(sizeof(struct node *));
+    NODE->childv[0] = VN;
+}
 
+vector_negation(NODE) ::= SUB vector_negation(VN).
+{
+    NODE = malloc(sizeof(struct node));
+    NODE->childv = NULL;
+    NODE->type = N_VECTOR_NEGATION;
+    NODE->alternative = ALT_VECTOR_NEGATION;
+    NODE->childc = 1;
+    NODE->childv = malloc(sizeof(struct node *));
+    NODE->childv[0] = VN;
+}
+vector_negation(NODE) ::= vector_primary_expression(VPE).
+{
+    NODE = malloc(sizeof(struct node));
+    NODE->childv = NULL;
+    NODE->type = N_VECTOR_NEGATION;
+    NODE->alternative = ALT_VECTOR_PRIMARY_EXPRESSION;
+    NODE->childc = 1;
+    NODE->childv = malloc(sizeof(struct node *));
+    NODE->childv[0] = VPE;
+}
+
+vector_primary_expression(NODE) ::= vector_atomic(VA).
+{
+    NODE = malloc(sizeof(struct node));
+    NODE->childv = NULL;
+    NODE->type = N_VECTOR_PRIMARY_EXPRESSION;
+    NODE->alternative = ALT_VECTOR_ATOMIC;
+    NODE->childc = 1;
+    NODE->childv = malloc(sizeof(struct node *));
+    NODE->childv[0] = VA;
+}
+vector_primary_expression(NODE) ::= LPAREN vector_expression(VE) RPAREN.
+{
+    NODE = malloc(sizeof(struct node));
+    NODE->childv = NULL;
+    NODE->type = N_VECTOR_PRIMARY_EXPRESSION;
+    NODE->alternative = ALT_VECTOR_EXPRESSION;
+    NODE->childc = 1;
+    NODE->childv = malloc(sizeof(struct node *));
+    NODE->childv[0] = VE;
+}
+
+vector_atomic(NODE) ::= IDENTIFIER(I).
+{
+  NODE = malloc(sizeof(struct node));
+  NODE->childv = NULL;
+  NODE->type = N_VECTOR_ATOMIC;
+  NODE->alternative = ALT_IDENTIFIER;
+  NODE->payload.vector_atomic.identifier = malloc(strlen(I) + 1);
+  strcpy((char *)(NODE->payload.vector_atomic.identifier), I);
+  NODE->childc = 0;
+  free((char *)I);
+}
+vector_atomic(NODE) ::= vector(V).
+{
+  NODE = malloc(sizeof(struct node));
+  NODE->childv = NULL;
+  NODE->type = N_VECTOR_ATOMIC;
+  NODE->alternative = ALT_VECTOR;
+  NODE->childc = 1;
+  NODE->childv = malloc(sizeof(struct node *));
+  NODE->childv[0] = V;
 }
 
 vector(NODE) ::= LBRACKET components(C) RBRACKET.
