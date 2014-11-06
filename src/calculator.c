@@ -45,14 +45,14 @@ int main()
         for (int i = 0; i < mappings->capacity; i++) {
             if (mappings->values[i].key) {
                 data = (struct ast_eval_result*) mappings->values[i].value;
-                if (data->alternative == ALT_NUMBER){
+                if (data->alternative == ALT_NUMBER) {
                     printf("%s: %f\n", mappings->values[i].key,
                            data->number);
-                } else if (data->alternative == ALT_VECTOR){
+                } else if (data->alternative == ALT_VECTOR) {
                     printf("%s: [", mappings->values[i].key);
-                    for (int j = 0; j < data->vector.compc; j++){
+                    for (int j = 0; j < data->vector.compc; j++) {
                         printf("%f", data->vector.compv[j]);
-                        if (j < data->vector.compc - 1){
+                        if (j < data->vector.compc - 1) {
                             printf(", ");
                         }
                     }

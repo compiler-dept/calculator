@@ -6,14 +6,14 @@
 #include "stack.h"
 
 struct ast_eval_result {
-	enum alternative alternative;
-	union {
-		double number;
-		struct {
-			int compc;
-			double compv[];
-		} vector;
-	};
+    enum alternative alternative;
+    union {
+        double number;
+        struct {
+            int compc;
+            double compv[];
+        } vector;
+    };
 };
 
 void ast_eval(struct node *, struct hashmap **);
