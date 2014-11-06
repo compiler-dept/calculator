@@ -78,7 +78,7 @@ declaration_sequence(NODE) ::= declaration(D).
   NODE->childv[0] = D;
 }
 
-declaration(NODE) ::= vector_declaration(VD) SEMIC.
+declaration(NODE) ::= VEC vector_declaration(VD) SEMIC.
 {
     NODE = malloc(sizeof(struct node));
     NODE->childv = NULL;
@@ -99,12 +99,12 @@ declaration(NODE) ::= scalar_declaration(SD) SEMIC.
   NODE->childv[0] = SD;
 }
 
-vector_declaration(NODE) ::= IDENTIFIER(I) EQ vector(VE).//vector_expression(VE).
+vector_declaration(NODE) ::= IDENTIFIER(I) EQ vector_expression(VE).
 {
     NODE = malloc(sizeof(struct node));
     NODE->childv = NULL;
     NODE->type = N_VECTOR_DECLARATION;
-    NODE->alternative = ALT_VECTOR; //ALT_VECTOR_EXPRESSION;
+    NODE->alternative = ALT_VECTOR_EXPRESSION;
     NODE->payload.vector_declaration.identifier = malloc(strlen(I) + 1);
     strcpy((char *)(NODE->payload.vector_declaration.identifier), I);
     NODE->childc = 1;
@@ -128,7 +128,7 @@ scalar_declaration(NODE) ::= IDENTIFIER(I) EQ atomic_expression(AE).
 }
 
 /** vector */
-/*vector_expression ::= vector_addition.
+vector_expression ::= vector_addition.
 {
 
 }
@@ -167,7 +167,7 @@ vector_primary_expression ::= vector.
 vector_primary_expression ::= LPAREN vector_expression RPAREN.
 {
 
-}*/
+}
 
 vector(NODE) ::= LBRACKET components(C) RBRACKET.
 {

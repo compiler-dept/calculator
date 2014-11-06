@@ -9,6 +9,7 @@
 
 %%
 
+"vec"                return VEC;
 [a-zA-Z][a-zA-Z0-9]* return IDENTIFIER;
 [0-9]+(\.[0-9]+)?    return NUMBER;
 [ \t\n]+             ;
@@ -23,7 +24,7 @@
 "-"                  return SUB;
 "*"                  return MULT;
 "/"                  return DIV;
-"|+"                 /* return VECADD */;
-"|*"                 /* return SCMULT */;
+"|+"                 return VECADD;
+"|*"                 return SCMULT;
 
 %%
