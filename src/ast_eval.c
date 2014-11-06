@@ -8,7 +8,7 @@ void ast_eval(struct node *root, struct hashmap **mappings)
     struct node *temp = NULL;
 
     double *val0, *val1, *val2;
-    struct ast_eval_result *data;
+    struct ast_eval_result *data0, *data1, *data2;
 
     while ((temp = ast_iterator_next(it))) {
         switch (temp->type) {
@@ -18,16 +18,24 @@ void ast_eval(struct node *root, struct hashmap **mappings)
                 *val0 = temp->payload.atomic.number;
                 stack_push(&stack, val0);
             } else if (temp->alternative == ALT_IDENTIFIER) {
-                data = hashmap_get(*mappings,
+                data0 = hashmap_get(*mappings,
                                    temp->payload.
                                    atomic.identifier);
-                if (data->alternative == ALT_NUMBER) {
+                if (data0->alternative == ALT_NUMBER) {
                     val1 = malloc(sizeof(double));
-                    *val1 = data->number;
+                    *val1 = data0->number;
                     stack_push(&stack, val1);
-                } else if (data->alternative == ALT_VECTOR) {
-                    stack_push(&stack, data);
+                } else if (data0->alternative == ALT_VECTOR) {
+                    stack_push(&stack, data0);
                 }
+            }
+            break;
+        case N_VECTOR_ATOMIC:
+            if (temp->alternative == ALT_IDENTIFIER) {
+                data0 = hashmap_get(*mappings,
+                                   temp->payload.
+                                   vector_atomic.identifier);
+                stack_push(&stack, data0);
             }
             break;
         case N_NEGATION:
@@ -35,6 +43,15 @@ void ast_eval(struct node *root, struct hashmap **mappings)
                 val0 = stack_pop(&stack);
                 *val0 *= -1;
                 stack_push(&stack, val0);
+            }
+            break;
+        case N_VECTOR_NEGATION:
+            if (temp->alternative == ALT_VECTOR_NEGATION) {
+                data0 = stack_pop(&stack);
+                for (int i = 0; i < data0->vector.compc; i++) {
+                    data0->vector.compv[i] *= -1;
+                }
+                stack_push(&stack, data0);
             }
             break;
         case N_ADDITION:
@@ -51,6 +68,22 @@ void ast_eval(struct node *root, struct hashmap **mappings)
             free(val0);
             free(val1);
             break;
+        case N_VECTOR_ADDITION:
+            if (temp->alternative == ALT_VECADD) {
+                data0 = stack_pop(&stack);
+                data1 = stack_pop(&stack);
+                data2 = malloc(sizeof(struct ast_eval_result *) + data0->vector.compc * sizeof(double));
+                data2->vector.compc = data0->vector.compc;
+
+                for (int i = 0; i < data1->vector.compc; i++) {
+                    data2->vector.compv[i] = data0->vector.compv[i] + data1->vector.compv[i];
+                }
+
+                stack_push(&stack, data2);
+                free(data0);
+                free(data1);
+            }
+            break;
         case N_MULTIPLICATION:
             val1 = stack_pop(&stack);	// left operand was pushed first
             val0 = stack_pop(&stack);	// so it needs to be retreived second
@@ -63,35 +96,50 @@ void ast_eval(struct node *root, struct hashmap **mappings)
             free(val0);
             free(val1);
             break;
+        case N_VECTOR_SCALAR_MULTIPLICATION:
+            if (temp->alternative == ALT_SCMULT) {
+                data0 = stack_pop(&stack);
+                data1 = malloc(sizeof(struct ast_eval_result *) + data0->vector.compc * sizeof(double));
+                data1->vector.compc = data0->vector.compc;
+                val0 = stack_pop(&stack);
+
+                for (int i = 0; i < data0->vector.compc; i++) {
+                    data1->vector.compv[i] = data0->vector.compv[i] * (*val0);
+                }
+
+                stack_push(&stack, data1);
+                free(data0);
+            }
+            break;
         case N_SCALAR_DECLARATION:
             val0 = stack_pop(&stack);
-            data = malloc(sizeof(struct ast_eval_result));
-            data->alternative = ALT_NUMBER;
-            data->number = *val0;
+            data0 = malloc(sizeof(struct ast_eval_result));
+            data0->alternative = ALT_NUMBER;
+            data0->number = *val0;
             free(hashmap_put
                  (mappings,
                   temp->payload.scalar_declaration.identifier,
-                  data));
+                  data0));
             free(val0);
             break;
         case N_VECTOR:
-            data =
+            data0 =
                 malloc(sizeof(struct ast_eval_result) +
                        temp->childc * sizeof(double));
-            data->alternative = ALT_VECTOR;
-            data->vector.compc = temp->childc;
+            data0->alternative = ALT_VECTOR;
+            data0->vector.compc = temp->childc;
             for (int i = 0; i < temp->childc; i++) {
                 val0 = stack_pop(&stack);
-                data->vector.compv[i] = *val0;
+                data0->vector.compv[i] = *val0;
                 free(val0);
             }
-            stack_push(&stack, data);
+            stack_push(&stack, data0);
             break;
         case N_VECTOR_DECLARATION:
-            data = stack_pop(&stack);
+            data0 = stack_pop(&stack);
             free(hashmap_put(mappings,
                              temp->payload.
-                             vector_declaration.identifier, data));
+                             vector_declaration.identifier, data0));
             break;
         }
     }

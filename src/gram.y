@@ -94,7 +94,7 @@ declaration(NODE) ::= VEC vector_declaration(VD) SEMIC.
     NODE->childv = malloc(sizeof(struct node *));
     NODE->childv[0] = VD;
 }
-declaration(NODE) ::= scalar_declaration(SD) SEMIC.
+declaration(NODE) ::= NUM scalar_declaration(SD) SEMIC.
 {
   NODE = malloc(sizeof(struct node));
   NODE->childv = NULL;
@@ -220,7 +220,7 @@ vector_primary_expression(NODE) ::= vector_atomic(VA).
     NODE->childv = malloc(sizeof(struct node *));
     NODE->childv[0] = VA;
 }
-vector_primary_expression(NODE) ::= LPAREN vector_expression(VE) RPAREN.
+vector_primary_expression(NODE) ::= LBRACE vector_expression(VE) RBRACE.
 {
     NODE = malloc(sizeof(struct node));
     NODE->childv = NULL;
