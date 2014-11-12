@@ -11,7 +11,6 @@
     struct parser_state parser_state;
     void *parser = ParseAlloc(malloc);
 
-    Parse(parser, NUM, strdup("num"), &parser_state);
     Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
     Parse(parser, EQ, strdup("="), &parser_state);
     Parse(parser, NUMBER, strdup("2"), &parser_state);
@@ -24,7 +23,6 @@
     Parse(parser, RPAREN, strdup(")"), &parser_state);
     Parse(parser, SEMIC, strdup(";"), &parser_state);
 
-    Parse(parser, NUM, strdup("num"), &parser_state);
     Parse(parser, IDENTIFIER, strdup("b"), &parser_state);
     Parse(parser, EQ, strdup("="), &parser_state);
     Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
@@ -32,7 +30,6 @@
     Parse(parser, NUMBER, strdup("1"), &parser_state);
     Parse(parser, SEMIC, strdup(";"), &parser_state);
 
-    Parse(parser, VEC, strdup("vec"), &parser_state);
     Parse(parser, IDENTIFIER, strdup("c"), &parser_state);
     Parse(parser, EQ, strdup("="), &parser_state);
     Parse(parser, LBRACKET, strdup("["), &parser_state);

@@ -9,7 +9,6 @@
     struct parser_state parser_state;
     void *parser = ParseAlloc(malloc);
 
-    Parse(parser, NUM, strdup("num"), &parser_state);
     Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
     Parse(parser, EQ, strdup("="), &parser_state);
     Parse(parser, NUMBER, strdup("1"), &parser_state);
@@ -24,7 +23,6 @@
     struct parser_state parser_state;
     void *parser = ParseAlloc(malloc);
 
-    Parse(parser, NUM, strdup("num"), &parser_state);
     Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
     Parse(parser, EQ, strdup("="), &parser_state);
     Parse(parser, LPAREN, strdup("("), &parser_state);
@@ -43,7 +41,6 @@
     struct parser_state parser_state;
     void *parser = ParseAlloc(malloc);
 
-    Parse(parser, NUM, strdup("num"), &parser_state);
     Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
     Parse(parser, EQ, strdup("="), &parser_state);
     Parse(parser, LPAREN, strdup("("), &parser_state);
@@ -64,7 +61,6 @@
     struct parser_state parser_state;
     void *parser = ParseAlloc(malloc);
 
-    Parse(parser, VEC, strdup("vec"), &parser_state);
     Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
     Parse(parser, EQ, strdup("="), &parser_state);
     Parse(parser, LBRACKET, strdup("["), &parser_state);
@@ -85,7 +81,6 @@
     /*struct parser_state parser_state;
     void *parser = ParseAlloc(malloc);
 
-    Parse(parser, VEC, strdup("vec"), &parser_state);
     Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
     Parse(parser, EQ, strdup("="), &parser_state);
     Parse(parser, LBRACKET, strdup("["), &parser_state);
@@ -93,7 +88,7 @@
     Parse(parser, COMMA, strdup(","), &parser_state);
     Parse(parser, NUMBER, strdup("2"), &parser_state);
     Parse(parser, RBRACKET, strdup("]"), &parser_state);
-    Parse(parser, VECADD, strdup("|+"), &parser_state);
+    Parse(parser, ADD, strdup("+"), &parser_state);
     Parse(parser, LBRACKET, strdup("["), &parser_state);
     Parse(parser, NUMBER, strdup("3"), &parser_state);
     Parse(parser, COMMA, strdup(","), &parser_state);
@@ -110,11 +105,10 @@
     /*struct parser_state parser_state;
     void *parser = ParseAlloc(malloc);
 
-    Parse(parser, VEC, strdup("vec"), &parser_state);
     Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
     Parse(parser, EQ, strdup("="), &parser_state);
     Parse(parser, NUMBER, strdup("2"), &parser_state);
-    Parse(parser, SCMULT, strdup("|*"), &parser_state);
+    Parse(parser, MULT, strdup("*"), &parser_state);
     Parse(parser, LBRACKET, strdup("["), &parser_state);
     Parse(parser, NUMBER, strdup("3"), &parser_state);
     Parse(parser, COMMA, strdup(","), &parser_state);
@@ -131,12 +125,10 @@
     struct parser_state parser_state;
     void *parser = ParseAlloc(malloc);
 
-    Parse(parser, NUM, strdup("num"), &parser_state);
     Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
     Parse(parser, EQ, strdup("="), &parser_state);
     Parse(parser, NUMBER, strdup("1"), &parser_state);
     Parse(parser, SEMIC, strdup(";"), &parser_state);
-    Parse(parser, NUM, strdup("num"), &parser_state);
     Parse(parser, IDENTIFIER, strdup("b"), &parser_state);
     Parse(parser, EQ, strdup("="), &parser_state);
     Parse(parser, NUMBER, strdup("2"), &parser_state);
@@ -151,7 +143,6 @@
     struct parser_state parser_state;
     void *parser = ParseAlloc(malloc);
 
-    Parse(parser, VEC, strdup("vec"), &parser_state);
     Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
     Parse(parser, EQ, strdup("="), &parser_state);
     Parse(parser, LBRACKET, strdup("["), &parser_state);
