@@ -142,6 +142,7 @@ void ast_eval(struct node *root, struct hashmap **mappings)
 
 				stack_push(&stack, data1);
 				free(data0);
+                free(val0);
 			}
 			break;
 		case N_SCALAR_DECLARATION:
