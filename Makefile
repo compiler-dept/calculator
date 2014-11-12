@@ -1,4 +1,5 @@
-CFLAGS=-g -Wall -std=c11 -Ilibcollect
+DISABLED_WARNINGS=switch
+CFLAGS=-g -Wall $(patsubst %, -Wno-%, $(DISABLED_WARNINGS)) -std=gnu11 -Ilibcollect
 LDFLAGS=-Llibcollect -lcollect
 YACC=lemon/lemon
 LEX=flex
