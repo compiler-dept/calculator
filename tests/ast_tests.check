@@ -11,6 +11,7 @@
     struct parser_state parser_state;
     void *parser = ParseAlloc(malloc);
 
+    Parse(parser, NUM, strdup("num"), &parser_state);
     Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
     Parse(parser, EQ, strdup("="), &parser_state);
     Parse(parser, NUMBER, strdup("2"), &parser_state);
@@ -23,6 +24,7 @@
     Parse(parser, RPAREN, strdup(")"), &parser_state);
     Parse(parser, SEMIC, strdup(";"), &parser_state);
 
+    Parse(parser, NUM, strdup("num"), &parser_state);
     Parse(parser, IDENTIFIER, strdup("b"), &parser_state);
     Parse(parser, EQ, strdup("="), &parser_state);
     Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
@@ -30,6 +32,7 @@
     Parse(parser, NUMBER, strdup("1"), &parser_state);
     Parse(parser, SEMIC, strdup(";"), &parser_state);
 
+    Parse(parser, VEC, strdup("vec"), &parser_state);
     Parse(parser, IDENTIFIER, strdup("c"), &parser_state);
     Parse(parser, EQ, strdup("="), &parser_state);
     Parse(parser, LBRACKET, strdup("["), &parser_state);
@@ -59,15 +62,6 @@
     ck_assert(val->vector.compc == 2);
     ck_assert(val->vector.compv[0] == -7);
     ck_assert(val->vector.compv[1] == -5);
-
-    printf("[");
-    for (int j = 0; j < val->vector.compc; j++){
-        printf("%f", val->vector.compv[j]);
-        if (j < val->vector.compc - 1){
-            printf(", ");
-        }
-    }
-    puts("]\n");
 
     for (int i = 0; i<mappings->capacity; i++){
         if (mappings->values[i].key){
