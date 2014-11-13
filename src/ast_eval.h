@@ -2,8 +2,8 @@
 #define AST_EVAL_H
 
 #include "ast.h"
+#include "tree.h"
 #include "hashmap.h"
-#include "stack.h"
 
 struct ast_eval_result {
     enum alternative alternative;

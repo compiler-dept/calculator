@@ -66,5 +66,5 @@
         }
     }
 
-    ast_free(parser_state.root);
+    tree_free(&(parser_state.root), payload_free);
     hashmap_free(mappings);

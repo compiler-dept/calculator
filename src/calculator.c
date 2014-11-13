@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "lexer.h"
 #include "hashmap.h"
+#include "ast.h"
 #include "ast_eval.h"
 #include "gram.h"
 #include "parser_state.h"
@@ -40,7 +41,7 @@ int main()
         Parse(shellParser, 0, NULL, &parser_state);
 
         ast_eval(parser_state.root, &mappings);
-        ast_free(parser_state.root);
+        tree_free(&(parser_state.root), payload_free);
         struct ast_eval_result *data;
         for (int i = 0; i < mappings->capacity; i++) {
             if (mappings->values[i].key) {

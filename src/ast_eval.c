@@ -1,3 +1,5 @@
+#include "stack.h"
+#include "tree.h"
 #include "ast_eval.h"
 
 struct ast_eval_result *alloc_number(double val)
@@ -20,7 +22,7 @@ struct ast_eval_result *alloc_vector(int size)
 
 struct ast_eval_result *copy(struct ast_eval_result *data)
 {
-    struct ast_eval_result *data1;
+    struct ast_eval_result *data1 = NULL;
     if (data->alternative == ALT_NUMBER) {
         data1 = malloc(sizeof(struct ast_eval_result));
         data1->alternative = ALT_NUMBER;
@@ -63,24 +65,23 @@ void inverse_multiplicative(struct ast_eval_result *data)
 
 void ast_eval(struct node *root, struct hashmap **mappings)
 {
-    struct ast_iterator *it = ast_iterator_init(root, POSTORDER);
+    struct tree_iterator *it = tree_iterator_init(&root, POSTORDER);
     struct stack *stack = NULL;
 
     struct node *temp = NULL;
 
     struct ast_eval_result *data0, *data1, *data2;
 
-    while ((temp = ast_iterator_next(it))) {
-        switch (temp->type) {
+    while ((temp = tree_iterator_next(it))) {
+        switch (((struct payload *)(temp->payload))->type) {
         case N_ATOMIC:
-            if (temp->alternative == ALT_NUMBER) {
+            if (((struct payload *)(temp->payload))->alternative == ALT_NUMBER) {
                 data0 =
-                    alloc_number(temp->payload.atomic.number);
+                    alloc_number(((struct payload *)(temp->payload))->atomic.number);
                 stack_push(&stack, data0);
-            } else if (temp->alternative == ALT_IDENTIFIER) {
+            } else if (((struct payload *)(temp->payload))->alternative == ALT_IDENTIFIER) {
                 data0 = hashmap_get(*mappings,
-                                    temp->payload.atomic.
-                                    identifier);
+                                    ((struct payload *)(temp->payload))->atomic.identifier);
                 data1 = copy(data0);
                 stack_push(&stack, data1);
             }
@@ -95,7 +96,7 @@ void ast_eval(struct node *root, struct hashmap **mappings)
             stack_push(&stack, data0);
             break;
         case N_NEGATION:
-            if (temp->alternative == ALT_NEGATION) {
+            if (((struct payload *)(temp->payload))->alternative == ALT_NEGATION) {
                 data0 = stack_pop(&stack);
                 inverse_additive(data0);
                 stack_push(&stack, data0);
@@ -104,7 +105,7 @@ void ast_eval(struct node *root, struct hashmap **mappings)
         case N_ADDITION:
             data1 = stack_pop(&stack);	// left operand was pushed first
             data0 = stack_pop(&stack);	// so it needs to be retreived second
-            if (temp->alternative == ALT_SUB) {
+            if (((struct payload *)(temp->payload))->alternative == ALT_SUB) {
                 inverse_additive(data1);
             }
 
@@ -130,7 +131,7 @@ void ast_eval(struct node *root, struct hashmap **mappings)
         case N_MULTIPLICATION:
             data1 = stack_pop(&stack);	// left operand was pushed first
             data0 = stack_pop(&stack);	// so it needs to be retreived second
-            if (temp->alternative == ALT_DIV) {
+            if (((struct payload *)(temp->payload))->alternative == ALT_DIV) {
                 inverse_multiplicative(data1);
             }
             if (data0->alternative == ALT_NUMBER) {
@@ -159,12 +160,12 @@ void ast_eval(struct node *root, struct hashmap **mappings)
                 data1 = copy(data0);
                 free(hashmap_put
                      (mappings,
-                      temp->payload.declaration.identifier,
+                      ((struct payload *)(temp->payload))->declaration.identifier,
                       data1));
             } else if (data0->alternative == ALT_VECTOR) {
                 data1 = copy(data0);
                 free(hashmap_put(mappings,
-                                 temp->payload.declaration.
+                                 ((struct payload *)(temp->payload))->declaration.
                                  identifier, data1));
             }
             free(data0);
