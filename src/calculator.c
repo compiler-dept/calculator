@@ -41,10 +41,23 @@ int main()
 
         ast_eval(parser_state.root, &mappings);
         ast_free(parser_state.root);
+        struct ast_eval_result *data;
         for (int i = 0; i < mappings->capacity; i++) {
             if (mappings->values[i].key) {
-                printf("%s: %f\n", mappings->values[i].key,
-                       *((double *)mappings->values[i].value));
+                data = (struct ast_eval_result*) mappings->values[i].value;
+                if (data->alternative == ALT_NUMBER) {
+                    printf("%s: %f\n", mappings->values[i].key,
+                           data->number);
+                } else if (data->alternative == ALT_VECTOR) {
+                    printf("%s: [", mappings->values[i].key);
+                    for (int j = 0; j < data->vector.compc; j++) {
+                        printf("%f", data->vector.compv[j]);
+                        if (j < data->vector.compc - 1) {
+                            printf(", ");
+                        }
+                    }
+                    puts("]\n");
+                }
             }
         }
         yy_delete_buffer(bufferState, scanner);

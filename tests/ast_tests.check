@@ -11,6 +11,7 @@
     struct parser_state parser_state;
     void *parser = ParseAlloc(malloc);
 
+    Parse(parser, NUM, strdup("num"), &parser_state);
     Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
     Parse(parser, EQ, strdup("="), &parser_state);
     Parse(parser, NUMBER, strdup("2"), &parser_state);
@@ -23,11 +24,24 @@
     Parse(parser, RPAREN, strdup(")"), &parser_state);
     Parse(parser, SEMIC, strdup(";"), &parser_state);
 
+    Parse(parser, NUM, strdup("num"), &parser_state);
     Parse(parser, IDENTIFIER, strdup("b"), &parser_state);
     Parse(parser, EQ, strdup("="), &parser_state);
     Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
     Parse(parser, ADD, strdup("+"), &parser_state);
     Parse(parser, NUMBER, strdup("1"), &parser_state);
+    Parse(parser, SEMIC, strdup(";"), &parser_state);
+
+    Parse(parser, VEC, strdup("vec"), &parser_state);
+    Parse(parser, IDENTIFIER, strdup("c"), &parser_state);
+    Parse(parser, EQ, strdup("="), &parser_state);
+    Parse(parser, LBRACKET, strdup("["), &parser_state);
+    Parse(parser, IDENTIFIER, strdup("a"), &parser_state);
+    Parse(parser, SUB, strdup("-"), &parser_state);
+    Parse(parser, NUMBER, strdup("1"), &parser_state);
+    Parse(parser, COMMA, strdup(","), &parser_state);
+    Parse(parser, IDENTIFIER, strdup("b"), &parser_state);
+    Parse(parser, RBRACKET, strdup("]"), &parser_state);
     Parse(parser, SEMIC, strdup(";"), &parser_state);
 
     Parse(parser, 0, 0, &parser_state);
@@ -38,11 +52,16 @@
     struct hashmap *mappings = NULL;
     ast_eval(parser_state.root, &mappings);
 
-    double *val = ((double*)hashmap_get(mappings, "a"));
-    ck_assert(*val == -6);
+    struct ast_eval_result *val = ((struct ast_eval_result*)hashmap_get(mappings, "a"));
+    ck_assert(val->number == -6);
 
-    val = ((double*)hashmap_get(mappings, "b"));
-    ck_assert(*val == -5);
+    val = ((struct ast_eval_result*)hashmap_get(mappings, "b"));
+    ck_assert(val->number == -5);
+
+    val = ((struct ast_eval_result*)hashmap_get(mappings, "c"));
+    ck_assert(val->vector.compc == 2);
+    ck_assert(val->vector.compv[0] == -7);
+    ck_assert(val->vector.compv[1] == -5);
 
     for (int i = 0; i<mappings->capacity; i++){
         if (mappings->values[i].key){

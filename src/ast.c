@@ -85,8 +85,6 @@ void ast_free(struct node *root)
     }
 
     struct ast_iterator *it = ast_iterator_init(root, POSTORDER);
-    struct stack *stack = NULL;
-
     struct node *temp = NULL;
 
     while ((temp = ast_iterator_next(it))) {
@@ -96,8 +94,17 @@ void ast_free(struct node *root)
                 free((char *)temp->payload.atomic.identifier);
             }
             break;
+        case N_VECTOR_ATOMIC:
+            if (temp->alternative == ALT_IDENTIFIER) {
+                free((char *)temp->payload.vector_atomic.identifier);
+            }
+            break;
         case N_SCALAR_DECLARATION:
             free((char *)temp->payload.scalar_declaration.
+                 identifier);
+            break;
+        case N_VECTOR_DECLARATION:
+            free((char *)temp->payload.vector_declaration.
                  identifier);
             break;
         default:
