@@ -4,6 +4,7 @@
     #include <string.h>
     #include <assert.h>
     #include <stdlib.h>
+    #include "tree.h"
     #include "ast.h"
     #include "parser_state.h"
 }
@@ -38,267 +39,205 @@
 
 translation_unit(NODE) ::= declaration_sequence(DS).
 {
-  NODE = malloc(sizeof(struct node));
-  NODE->childv = NULL;
-  NODE->type = N_TRANSLATION_UNIT;
-  NODE->alternative = ALT_DECLARATION_SEQUENCE;
-  NODE->childc = 1;
-  NODE->childv = malloc(sizeof(struct node *));
-  NODE->childv[0] = DS;
-  parser_state->root = NODE;
-  parser_state->state = OK;
+    struct payload *payload = malloc(sizeof(struct payload));
+    payload->type = N_TRANSLATION_UNIT;
+    payload->alternative = ALT_DECLARATION_SEQUENCE;
+    NODE = tree_create_node(payload, 1, DS);
+    parser_state->root = NODE;
+    parser_state->state = OK;
 }
 translation_unit ::= error.
 {
-  printf("%s", "Error handler\n");
+    printf("%s", "Error handler\n");
 }
 
 declaration_sequence(NODE) ::= declaration(D) declaration_sequence(DS).
 {
-  NODE = malloc(sizeof(struct node));
-  NODE->childv = NULL;
-  NODE->type = N_DECLARATION_SEQUENCE;
-  NODE->alternative = ALT_DECLARATION_SEQUENCE;
-  NODE->childc = 2;
-  NODE->childv = malloc(2 * sizeof(struct node *));
-  NODE->childv[0] = D;
-  NODE->childv[1] = DS;
+    struct payload *payload = malloc(sizeof(struct payload));
+    payload->type = N_DECLARATION_SEQUENCE;
+    payload->alternative = ALT_DECLARATION_SEQUENCE;
+    NODE = tree_create_node(payload, 2, D, DS);
 }
 
 declaration_sequence(NODE) ::= declaration(D).
 {
-  NODE = malloc(sizeof(struct node));
-  NODE->childv = NULL;
-  NODE->type = N_DECLARATION_SEQUENCE;
-  NODE->alternative = ALT_DECLARATION;
-  NODE->childc = 1;
-  NODE->childv = malloc(sizeof(struct node *));
-  NODE->childv[0] = D;
+    struct payload *payload = malloc(sizeof(struct payload));
+    payload->type = N_DECLARATION_SEQUENCE;
+    payload->alternative = ALT_DECLARATION;
+    NODE = tree_create_node(payload, 1, D);
 }
 
 
 declaration(NODE) ::= IDENTIFIER(I) EQ expression(AE) SEMIC.
 {
-  NODE = malloc(sizeof(struct node));
-  NODE->childv = NULL;
-  NODE->type = N_DECLARATION;
-  NODE->alternative = ALT_EXPRESSION;
-  NODE->payload.declaration.identifier = malloc(strlen(I) + 1);
-  strcpy((char *)(NODE->payload.declaration.identifier), I);
-  NODE->childc = 1;
-  NODE->childv = malloc(sizeof(struct node *));
-  NODE->childv[0] = AE;
-  free((char *)I);
+    struct payload *payload = malloc(sizeof(struct payload));
+    payload->type = N_DECLARATION;
+    payload->alternative = ALT_EXPRESSION;
+    payload->declaration.identifier = malloc(strlen(I) + 1);
+    strcpy((char *)(payload->declaration.identifier), I);
+    NODE = tree_create_node(payload, 1, AE);
+    free((char *)I);
 }
 
 
 vector(NODE) ::= LBRACKET components(C) RBRACKET.
 {
-    NODE = malloc(sizeof(struct node));
-    NODE->childv = NULL;
-    NODE->type = N_VECTOR;
-    NODE->alternative = ALT_COMPONENTS;
+    struct payload *payload = malloc(sizeof(struct payload));
+    payload->type = N_VECTOR;
+    payload->alternative = ALT_COMPONENTS;
+    NODE = malloc(sizeof(struct node) + sizeof(struct node *) * C->childc);
+    NODE->payload = payload;
     NODE->childc = C->childc;
-    NODE->childv = C->childv;
+    memcpy(NODE->childv, C->childv, sizeof(struct node *) * NODE->childc);
     free(C);
 }
 
 components(NODE) ::= expression(AE) COMMA components(C).
 {
-    NODE = malloc(sizeof(struct node));
-    NODE->childv = NULL;
-    NODE->type = N_COMPONENTS;
-    NODE->alternative = ALT_EXPRESSION;
+    struct payload *payload = malloc(sizeof(struct payload));
+    payload->type = N_COMPONENTS;
+    payload->alternative = ALT_EXPRESSION;
+    NODE = malloc(sizeof(struct node) + sizeof(struct node *) * (C->childc + 1));
+    NODE->payload = payload;
     NODE->childc = C->childc + 1;
-    NODE->childv = realloc(C->childv, NODE->childc * sizeof(struct node *));
+    memcpy(NODE->childv, C->childv, sizeof(struct node *) * NODE->childc);
     NODE->childv[NODE->childc - 1] = AE;
     free(C);
 }
 components(NODE) ::= expression(AE).
 {
-    NODE = malloc(sizeof(struct node));
-    NODE->childv = NULL;
-    NODE->type = N_COMPONENTS;
-    NODE->alternative = ALT_EXPRESSION;
-    NODE->childc = 1;
-    NODE->childv = malloc(sizeof(struct node *));
-    NODE->childv[0] = AE;
+    struct payload *payload = malloc(sizeof(struct payload));
+    payload->type = N_COMPONENTS;
+    payload->alternative = ALT_EXPRESSION;
+    NODE = tree_create_node(payload, 1, AE);
 }
 
 /** expressions */
 expression(NODE) ::= additive_expression(ADE).
 {
-  NODE = malloc(sizeof(struct node));
-  NODE->childv = NULL;
-  NODE->type = N_EXPRESSION;
-  NODE->alternative = ALT_ADDITIVE_EXPRESSION;
-  NODE->childc = 1;
-  NODE->childv = malloc(sizeof(struct node *));
-  NODE->childv[0] = ADE;
+    struct payload *payload = malloc(sizeof(struct payload));
+    payload->type = N_EXPRESSION;
+    payload->alternative = ALT_ADDITIVE_EXPRESSION;
+    NODE = tree_create_node(payload, 1, ADE);
 }
 
 additive_expression(NODE) ::= addition(A).
 {
-  NODE = malloc(sizeof(struct node));
-  NODE->childv = NULL;
-  NODE->type = N_ADDITIVE_EXPRESSION;
-  NODE->alternative = ALT_ADDITION;
-  NODE->childc = 1;
-  NODE->childv = malloc(sizeof(struct node *));
-  NODE->childv[0] = A;
+    struct payload *payload = malloc(sizeof(struct payload));
+    payload->type = N_ADDITIVE_EXPRESSION;
+    payload->alternative = ALT_ADDITION;
+    NODE = tree_create_node(payload, 1, A);
 }
 
 additive_expression(NODE) ::= multiplicative_expression(ME).
 {
-  NODE = malloc(sizeof(struct node));
-  NODE->childv = NULL;
-  NODE->type = N_ADDITIVE_EXPRESSION;
-  NODE->alternative = ALT_MULTIPLICATIVE_EXPRESSION;
-  NODE->childc = 1;
-  NODE->childv = malloc(sizeof(struct node *));
-  NODE->childv[0] = ME;
+    struct payload *payload = malloc(sizeof(struct payload));
+    payload->type = N_ADDITIVE_EXPRESSION;
+    payload->alternative = ALT_MULTIPLICATIVE_EXPRESSION;
+    NODE = tree_create_node(payload, 1, ME);
 }
 
 addition(NODE) ::= additive_expression(AE) ADD multiplicative_expression(ME).
 {
-  NODE = malloc(sizeof(struct node));
-  NODE->childv = NULL;
-  NODE->type = N_ADDITION;
-  NODE->alternative = ALT_ADD;
-  NODE->childc = 2;
-  NODE->childv = malloc(2 * sizeof(struct node *));
-  NODE->childv[0] = AE;
-  NODE->childv[1] = ME;
+    struct payload *payload = malloc(sizeof(struct payload));
+    payload->type = N_ADDITION;
+    payload->alternative = ALT_ADD;
+    NODE = tree_create_node(payload, 2, AE, ME);
 }
 addition(NODE) ::= additive_expression(AE) SUB multiplicative_expression(ME).
 {
-  NODE = malloc(sizeof(struct node));
-  NODE->childv = NULL;
-  NODE->type = N_ADDITION;
-  NODE->alternative = ALT_SUB;
-  NODE->childc = 2;
-  NODE->childv = malloc(2 * sizeof(struct node *));
-  NODE->childv[0] = AE;
-  NODE->childv[1] = ME;
+    struct payload *payload = malloc(sizeof(struct payload));
+    payload->type = N_ADDITION;
+    payload->alternative = ALT_SUB;
+    NODE = tree_create_node(payload, 2, AE, ME);
 }
 
 multiplicative_expression(NODE) ::= multiplication(M).
 {
-  NODE = malloc(sizeof(struct node));
-  NODE->childv = NULL;
-  NODE->type = N_MULTIPLICATIVE_EXPRESSION;
-  NODE->alternative = ALT_MULTIPLICATION;
-  NODE->childc = 1;
-  NODE->childv = malloc(sizeof(struct node *));
-  NODE->childv[0] = M;
+    struct payload *payload = malloc(sizeof(struct payload));
+    payload->type = N_MULTIPLICATIVE_EXPRESSION;
+    payload->alternative = ALT_MULTIPLICATION;
+    NODE = tree_create_node(payload, 1, M);
 }
 multiplicative_expression(NODE) ::= negation(N).
 {
-  NODE = malloc(sizeof(struct node));
-  NODE->childv = NULL;
-  NODE->type = N_MULTIPLICATIVE_EXPRESSION;
-  NODE->alternative = ALT_NEGATION;
-  NODE->childc = 1;
-  NODE->childv = malloc(sizeof(struct node *));
-  NODE->childv[0] = N;
+    struct payload *payload = malloc(sizeof(struct payload));
+    payload->type = N_MULTIPLICATIVE_EXPRESSION;
+    payload->alternative = ALT_NEGATION;
+    NODE = tree_create_node(payload, 1, N);
 }
 
 multiplication(NODE) ::= multiplicative_expression(ME) MULT negation(N).
 {
-  NODE = malloc(sizeof(struct node));
-  NODE->childv = NULL;
-  NODE->type = N_MULTIPLICATION;
-  NODE->alternative = ALT_MULT;
-  NODE->childc = 2;
-  NODE->childv = malloc(2 * sizeof(struct node *));
-  NODE->childv[0] = ME;
-  NODE->childv[1] = N;
+    struct payload *payload = malloc(sizeof(struct payload));
+    payload->type = N_MULTIPLICATION;
+    payload->alternative = ALT_MULT;
+    NODE = tree_create_node(payload, 2, ME, N);
 }
 multiplication(NODE) ::= multiplicative_expression(ME) DIV negation(N).
 {
-  NODE = malloc(sizeof(struct node));
-  NODE->childv = NULL;
-  NODE->type = N_MULTIPLICATION;
-  NODE->alternative = ALT_DIV;
-  NODE->childc = 2;
-  NODE->childv = malloc(2 * sizeof(struct node *));
-  NODE->childv[0] = ME;
-  NODE->childv[1] = N;
+    struct payload *payload = malloc(sizeof(struct payload));
+    payload->type = N_MULTIPLICATION;
+    payload->alternative = ALT_DIV;
+    NODE = tree_create_node(payload, 2, ME, N);
 }
 
-negation(NODE) ::= SUB negation(NR).
+negation(NODE) ::= SUB negation(N).
 {
-  NODE = malloc(sizeof(struct node));
-  NODE->childv = NULL;
-  NODE->type = N_NEGATION;
-  NODE->alternative = ALT_NEGATION;
-  NODE->childc = 1;
-  NODE->childv = malloc(sizeof(struct node *));
-  NODE->childv[0] = NR;
+    struct payload *payload = malloc(sizeof(struct payload));
+    payload->type = N_NEGATION;
+    payload->alternative = ALT_NEGATION;
+    NODE = tree_create_node(payload, 1, N);
 }
 negation(NODE) ::= primary_expression(PE).
 {
-  NODE = malloc(sizeof(struct node));
-  NODE->childv = NULL;
-  NODE->type = N_NEGATION;
-  NODE->alternative = ALT_PRIMARY_EXPRESSION;
-  NODE->childc = 1;
-  NODE->childv = malloc(sizeof(struct node *));
-  NODE->childv[0] = PE;
+    struct payload *payload = malloc(sizeof(struct payload));
+    payload->type = N_NEGATION;
+    payload->alternative = ALT_PRIMARY_EXPRESSION;
+    NODE = tree_create_node(payload, 1, PE);
 }
 
-primary_expression(NODE) ::= LPAREN expression(AE) RPAREN.
+primary_expression(NODE) ::= LPAREN expression(E) RPAREN.
 {
-  NODE = malloc(sizeof(struct node));
-  NODE->childv = NULL;
-  NODE->type = N_PRIMARY_EXPRESSION;
-  NODE->alternative = ALT_EXPRESSION;
-  NODE->childc = 1;
-  NODE->childv = malloc(sizeof(struct node *));
-  NODE->childv[0] = AE;
+    struct payload *payload = malloc(sizeof(struct payload));
+    payload->type = N_PRIMARY_EXPRESSION;
+    payload->alternative = ALT_EXPRESSION;
+    NODE = tree_create_node(payload, 1, E);
 }
 
 primary_expression(NODE) ::= atomic(A).
 {
-  NODE = malloc(sizeof(struct node));
-  NODE->childv = NULL;
-  NODE->type = N_PRIMARY_EXPRESSION;
-  NODE->alternative = ALT_ATOMIC;
-  NODE->childc = 1;
-  NODE->childv = malloc(sizeof(struct node *));
-  NODE->childv[0] = A;
+    struct payload *payload = malloc(sizeof(struct payload));
+    payload->type = N_PRIMARY_EXPRESSION;
+    payload->alternative = ALT_ATOMIC;
+    NODE = tree_create_node(payload, 1, A);
 }
 
 atomic(NODE) ::= IDENTIFIER(I).
 {
-  NODE = malloc(sizeof(struct node));
-  NODE->childv = NULL;
-  NODE->type = N_ATOMIC;
-  NODE->alternative = ALT_IDENTIFIER;
-  NODE->payload.atomic.identifier = malloc(strlen(I) + 1);
-  strcpy((char *)(NODE->payload.atomic.identifier), I);
-  NODE->childc = 0;
-  free((char *)I);
+    struct payload *payload = malloc(sizeof(struct payload));
+    payload->type = N_ATOMIC;
+    payload->alternative = ALT_IDENTIFIER;
+    payload->atomic.identifier = malloc(strlen(I) + 1);
+    strcpy((char *)(payload->atomic.identifier), I);
+    NODE = tree_create_node(payload, 0);
+    free((char *)I);
 }
 
 atomic(NODE) ::= NUMBER(N).
 {
-  NODE = malloc(sizeof(struct node));
-  NODE->childv = NULL;
-  NODE->type = N_ATOMIC;
-  NODE->alternative = ALT_NUMBER;
-  NODE->payload.atomic.number = atof(N);
-  NODE->childc = 0;
-  free((char *)N);
+    struct payload *payload = malloc(sizeof(struct payload));
+    payload->type = N_ATOMIC;
+    payload->alternative = ALT_NUMBER;
+    payload->atomic.number = atof(N);
+    NODE = tree_create_node(payload, 0);
+    free((char *)N);
 }
 
 atomic(NODE) ::= vector(V).
 {
-  NODE = malloc(sizeof(struct node));
-  NODE->childv = NULL;
-  NODE->type = N_ATOMIC;
-  NODE->alternative = ALT_VECTOR;
-  NODE->childc = 1;
-  NODE->childv = malloc(sizeof(struct node *));
-  NODE->childv[0] = V;
+    struct payload *payload = malloc(sizeof(struct payload));
+    payload->type = N_ATOMIC;
+    payload->alternative = ALT_VECTOR;
+    NODE = tree_create_node(payload, 1, V);
 }
