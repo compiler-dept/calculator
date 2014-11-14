@@ -88,7 +88,8 @@ vector(NODE) ::= LBRACKET components(C) RBRACKET.
     NODE = malloc(sizeof(struct node) + sizeof(struct node *) * C->childc);
     NODE->payload = payload;
     NODE->childc = C->childc;
-    memcpy(NODE->childv, C->childv, sizeof(struct node *) * NODE->childc);
+    memcpy(NODE->childv, C->childv, sizeof(struct node *) * C->childc);
+    payload_free(C->payload);
     free(C);
 }
 
@@ -100,8 +101,9 @@ components(NODE) ::= expression(AE) COMMA components(C).
     NODE = malloc(sizeof(struct node) + sizeof(struct node *) * (C->childc + 1));
     NODE->payload = payload;
     NODE->childc = C->childc + 1;
-    memcpy(NODE->childv, C->childv, sizeof(struct node *) * NODE->childc);
+    memcpy(NODE->childv, C->childv, sizeof(struct node *) * C->childc);
     NODE->childv[NODE->childc - 1] = AE;
+    payload_free(C->payload);
     free(C);
 }
 components(NODE) ::= expression(AE).
