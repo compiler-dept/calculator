@@ -7,7 +7,7 @@
     #include "tree.h"
     #include "ast.h"
     #include "parser_state.h"
-    
+
     struct stack *allocated_nodes = NULL;
 }
 
@@ -102,6 +102,7 @@ vector(NODE) ::= LBRACKET components(C) RBRACKET.
     NODE->childc = C->childc;
     memcpy(NODE->childv, C->childv, sizeof(struct node *) * C->childc);
     payload_free(C->payload);
+    C->payload = NULL;
     stack_push(&allocated_nodes, NODE);
     free(C);
 }
@@ -117,6 +118,7 @@ components(NODE) ::= expression(AE) COMMA components(C).
     memcpy(NODE->childv, C->childv, sizeof(struct node *) * C->childc);
     NODE->childv[NODE->childc - 1] = AE;
     payload_free(C->payload);
+    C->payload = NULL;
     stack_push(&allocated_nodes, NODE);
     free(C);
 }
