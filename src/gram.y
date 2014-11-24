@@ -45,7 +45,6 @@ translation_unit(NODE) ::= declaration_sequence(DS).
     payload->type = N_TRANSLATION_UNIT;
     payload->alternative = ALT_DECLARATION_SEQUENCE;
     NODE = tree_create_node(payload, 1, DS);
-    stack_push(&allocated_nodes, NODE);
     parser_state->root = NODE;
     parser_state->state = OK;
     while (stack_pop(&allocated_nodes));
