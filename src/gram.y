@@ -35,7 +35,7 @@
 
 %syntax_error
 {
-    fprintf(stderr, "Error parsing input.");
+    fprintf(stderr, "Error parsing input.\n");
     parser_state->state = ERROR;
 }
 
