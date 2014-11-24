@@ -120,6 +120,7 @@ components(NODE) ::= expression(AE) COMMA components(C).
     NODE->childv[NODE->childc - 1] = AE;
     payload_free(C->payload);
     C->payload = NULL;
+    stack_pop(&allocated_nodes);
     stack_push(&allocated_nodes, NODE);
     free(C);
 }
