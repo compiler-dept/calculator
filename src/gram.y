@@ -48,6 +48,7 @@ translation_unit(NODE) ::= declaration_sequence(DS).
     stack_push(&allocated_nodes, NODE);
     parser_state->root = NODE;
     parser_state->state = OK;
+    while (stack_pop(&allocated_nodes));
 }
 translation_unit ::= error.
 {
