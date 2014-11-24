@@ -7,6 +7,8 @@
     #include "tree.h"
     #include "ast.h"
     #include "parser_state.h"
+    
+    struct stack *allocated_nodes = NULL;
 }
 
 %token_type { const char * }
@@ -33,7 +35,7 @@
 
 %syntax_error
 {
-    puts("Error parsing input.");
+    fprintf(stderr, "Error parsing input.");
     parser_state->state = ERROR;
 }
 
@@ -43,12 +45,19 @@ translation_unit(NODE) ::= declaration_sequence(DS).
     payload->type = N_TRANSLATION_UNIT;
     payload->alternative = ALT_DECLARATION_SEQUENCE;
     NODE = tree_create_node(payload, 1, DS);
+    stack_push(&allocated_nodes, NODE);
     parser_state->root = NODE;
     parser_state->state = OK;
 }
 translation_unit ::= error.
 {
-    printf("%s", "Error handler\n");
+    struct node *temp = NULL;
+    while ((temp = stack_pop(&allocated_nodes)) != NULL){
+        payload_free(temp->payload);
+        free(temp);
+    }
+    parser_state->state = ERROR;
+    parser_state->root = NULL;
 }
 
 declaration_sequence(NODE) ::= declaration(D) declaration_sequence(DS).
@@ -57,6 +66,7 @@ declaration_sequence(NODE) ::= declaration(D) declaration_sequence(DS).
     payload->type = N_DECLARATION_SEQUENCE;
     payload->alternative = ALT_DECLARATION_SEQUENCE;
     NODE = tree_create_node(payload, 2, D, DS);
+    stack_push(&allocated_nodes, NODE);
 }
 
 declaration_sequence(NODE) ::= declaration(D).
@@ -65,6 +75,7 @@ declaration_sequence(NODE) ::= declaration(D).
     payload->type = N_DECLARATION_SEQUENCE;
     payload->alternative = ALT_DECLARATION;
     NODE = tree_create_node(payload, 1, D);
+    stack_push(&allocated_nodes, NODE);
 }
 
 
@@ -76,6 +87,7 @@ declaration(NODE) ::= IDENTIFIER(I) EQ expression(AE) SEMIC.
     payload->declaration.identifier = malloc(strlen(I) + 1);
     strcpy((char *)(payload->declaration.identifier), I);
     NODE = tree_create_node(payload, 1, AE);
+    stack_push(&allocated_nodes, NODE);
     free((char *)I);
 }
 
@@ -90,6 +102,7 @@ vector(NODE) ::= LBRACKET components(C) RBRACKET.
     NODE->childc = C->childc;
     memcpy(NODE->childv, C->childv, sizeof(struct node *) * C->childc);
     payload_free(C->payload);
+    stack_push(&allocated_nodes, NODE);
     free(C);
 }
 
@@ -104,6 +117,7 @@ components(NODE) ::= expression(AE) COMMA components(C).
     memcpy(NODE->childv, C->childv, sizeof(struct node *) * C->childc);
     NODE->childv[NODE->childc - 1] = AE;
     payload_free(C->payload);
+    stack_push(&allocated_nodes, NODE);
     free(C);
 }
 components(NODE) ::= expression(AE).
@@ -112,6 +126,7 @@ components(NODE) ::= expression(AE).
     payload->type = N_COMPONENTS;
     payload->alternative = ALT_EXPRESSION;
     NODE = tree_create_node(payload, 1, AE);
+    stack_push(&allocated_nodes, NODE);
 }
 
 /** expressions */
@@ -121,6 +136,7 @@ expression(NODE) ::= additive_expression(ADE).
     payload->type = N_EXPRESSION;
     payload->alternative = ALT_ADDITIVE_EXPRESSION;
     NODE = tree_create_node(payload, 1, ADE);
+    stack_push(&allocated_nodes, NODE);
 }
 
 additive_expression(NODE) ::= addition(A).
@@ -129,6 +145,7 @@ additive_expression(NODE) ::= addition(A).
     payload->type = N_ADDITIVE_EXPRESSION;
     payload->alternative = ALT_ADDITION;
     NODE = tree_create_node(payload, 1, A);
+    stack_push(&allocated_nodes, NODE);
 }
 
 additive_expression(NODE) ::= multiplicative_expression(ME).
@@ -137,6 +154,7 @@ additive_expression(NODE) ::= multiplicative_expression(ME).
     payload->type = N_ADDITIVE_EXPRESSION;
     payload->alternative = ALT_MULTIPLICATIVE_EXPRESSION;
     NODE = tree_create_node(payload, 1, ME);
+    stack_push(&allocated_nodes, NODE);
 }
 
 addition(NODE) ::= additive_expression(AE) ADD multiplicative_expression(ME).
@@ -145,6 +163,7 @@ addition(NODE) ::= additive_expression(AE) ADD multiplicative_expression(ME).
     payload->type = N_ADDITION;
     payload->alternative = ALT_ADD;
     NODE = tree_create_node(payload, 2, AE, ME);
+    stack_push(&allocated_nodes, NODE);
 }
 addition(NODE) ::= additive_expression(AE) SUB multiplicative_expression(ME).
 {
@@ -152,6 +171,7 @@ addition(NODE) ::= additive_expression(AE) SUB multiplicative_expression(ME).
     payload->type = N_ADDITION;
     payload->alternative = ALT_SUB;
     NODE = tree_create_node(payload, 2, AE, ME);
+    stack_push(&allocated_nodes, NODE);
 }
 
 multiplicative_expression(NODE) ::= multiplication(M).
@@ -160,6 +180,7 @@ multiplicative_expression(NODE) ::= multiplication(M).
     payload->type = N_MULTIPLICATIVE_EXPRESSION;
     payload->alternative = ALT_MULTIPLICATION;
     NODE = tree_create_node(payload, 1, M);
+    stack_push(&allocated_nodes, NODE);
 }
 multiplicative_expression(NODE) ::= negation(N).
 {
@@ -167,6 +188,7 @@ multiplicative_expression(NODE) ::= negation(N).
     payload->type = N_MULTIPLICATIVE_EXPRESSION;
     payload->alternative = ALT_NEGATION;
     NODE = tree_create_node(payload, 1, N);
+    stack_push(&allocated_nodes, NODE);
 }
 
 multiplication(NODE) ::= multiplicative_expression(ME) MULT negation(N).
@@ -175,6 +197,7 @@ multiplication(NODE) ::= multiplicative_expression(ME) MULT negation(N).
     payload->type = N_MULTIPLICATION;
     payload->alternative = ALT_MULT;
     NODE = tree_create_node(payload, 2, ME, N);
+    stack_push(&allocated_nodes, NODE);
 }
 multiplication(NODE) ::= multiplicative_expression(ME) DIV negation(N).
 {
@@ -182,6 +205,7 @@ multiplication(NODE) ::= multiplicative_expression(ME) DIV negation(N).
     payload->type = N_MULTIPLICATION;
     payload->alternative = ALT_DIV;
     NODE = tree_create_node(payload, 2, ME, N);
+    stack_push(&allocated_nodes, NODE);
 }
 
 negation(NODE) ::= SUB negation(N).
@@ -190,6 +214,7 @@ negation(NODE) ::= SUB negation(N).
     payload->type = N_NEGATION;
     payload->alternative = ALT_NEGATION;
     NODE = tree_create_node(payload, 1, N);
+    stack_push(&allocated_nodes, NODE);
 }
 negation(NODE) ::= primary_expression(PE).
 {
@@ -197,6 +222,7 @@ negation(NODE) ::= primary_expression(PE).
     payload->type = N_NEGATION;
     payload->alternative = ALT_PRIMARY_EXPRESSION;
     NODE = tree_create_node(payload, 1, PE);
+    stack_push(&allocated_nodes, NODE);
 }
 
 primary_expression(NODE) ::= LPAREN expression(E) RPAREN.
@@ -205,6 +231,7 @@ primary_expression(NODE) ::= LPAREN expression(E) RPAREN.
     payload->type = N_PRIMARY_EXPRESSION;
     payload->alternative = ALT_EXPRESSION;
     NODE = tree_create_node(payload, 1, E);
+    stack_push(&allocated_nodes, NODE);
 }
 
 primary_expression(NODE) ::= atomic(A).
@@ -213,6 +240,7 @@ primary_expression(NODE) ::= atomic(A).
     payload->type = N_PRIMARY_EXPRESSION;
     payload->alternative = ALT_ATOMIC;
     NODE = tree_create_node(payload, 1, A);
+    stack_push(&allocated_nodes, NODE);
 }
 
 atomic(NODE) ::= IDENTIFIER(I).
@@ -223,6 +251,7 @@ atomic(NODE) ::= IDENTIFIER(I).
     payload->atomic.identifier = malloc(strlen(I) + 1);
     strcpy((char *)(payload->atomic.identifier), I);
     NODE = tree_create_node(payload, 0);
+    stack_push(&allocated_nodes, NODE);
     free((char *)I);
 }
 
@@ -233,6 +262,7 @@ atomic(NODE) ::= NUMBER(N).
     payload->alternative = ALT_NUMBER;
     payload->atomic.number = atof(N);
     NODE = tree_create_node(payload, 0);
+    stack_push(&allocated_nodes, NODE);
     free((char *)N);
 }
 
@@ -242,4 +272,5 @@ atomic(NODE) ::= vector(V).
     payload->type = N_ATOMIC;
     payload->alternative = ALT_VECTOR;
     NODE = tree_create_node(payload, 1, V);
+    stack_push(&allocated_nodes, NODE);
 }
