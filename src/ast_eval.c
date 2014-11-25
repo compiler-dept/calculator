@@ -130,6 +130,14 @@ void ast_eval(struct node *root, struct hashmap **mappings)
                     alloc_number(data0->number + data1->number);
             } else if (data0->alternative == ALT_VECTOR
                        && data1->alternative == ALT_VECTOR) {
+                if (data0->vector.compc != data1->vector.compc){
+                    printf("Undefined Operation: Addition of Vectors of Different Lengths.\n");
+                    abort = 1;
+                    free(data0);
+                    free(data1);
+                    break;
+                }
+
                 data2 = alloc_vector(data0->vector.compc);
 
                 for (int i = 0; i < data0->vector.compc; i++) {
