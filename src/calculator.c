@@ -44,6 +44,7 @@ int main()
 			ast_eval(parser_state.root, &mappings);
 			tree_free(&(parser_state.root), payload_free);
 			struct ast_eval_result *data;
+            if (mappings){
 			for (int i = 0; i < mappings->capacity; i++) {
 				if (mappings->values[i].key) {
 					data =
@@ -73,6 +74,7 @@ int main()
 					}
 				}
 			}
+            }
 		}
 		yy_delete_buffer(bufferState, scanner);
 		ParseFree(shellParser, free);

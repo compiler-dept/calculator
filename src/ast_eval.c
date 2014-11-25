@@ -72,6 +72,8 @@ void ast_eval(struct node *root, struct hashmap **mappings)
 
     struct ast_eval_result *data0, *data1, *data2;
 
+    char abort = 0;
+
     while ((temp = tree_iterator_next(it))) {
         switch (((struct payload *)(temp->payload))->type) {
         case N_ATOMIC:
@@ -80,16 +82,29 @@ void ast_eval(struct node *root, struct hashmap **mappings)
                     alloc_number(((struct payload *)(temp->payload))->atomic.number);
                 stack_push(&stack, data0);
             } else if (((struct payload *)(temp->payload))->alternative == ALT_IDENTIFIER) {
-                data0 = hashmap_get(*mappings,
-                                    ((struct payload *)(temp->payload))->atomic.identifier);
-                data1 = copy(data0);
-                stack_push(&stack, data1);
+                const char *id = ((struct payload *)
+                        (temp->payload))->atomic.identifier;
+                data0 = hashmap_get(*mappings, id);
+                if (data0) {
+                    data1 = copy(data0);
+                    stack_push(&stack, data1);
+                } else {
+                    printf("Use of Undefined Variable: %s\n", id); 
+                    abort = 1;
+                    break ;
+                }
             }
             break;
         case N_VECTOR:
             data0 = alloc_vector(temp->childc);
             for (int i = 0; i < temp->childc; i++) {
                 data1 = stack_pop(&stack);
+                if (data1->alternative != ALT_NUMBER){
+                    printf("Undefined Operation: Multidimensional Vector\n");
+                    free(data1);
+                    abort = 1;
+                    break;
+                }
                 data0->vector.compv[i] = data1->number;
                 free(data1);
             }
@@ -122,6 +137,12 @@ void ast_eval(struct node *root, struct hashmap **mappings)
                         data0->vector.compv[i] +
                         data1->vector.compv[i];
                 }
+            } else {
+                printf("Undefined Operation: Mixed Scalar Vector Addition\n");
+                free(data0);
+                free(data1);
+                abort = 1;
+                break;
             }
             stack_push(&stack, data2);
 
@@ -149,6 +170,12 @@ void ast_eval(struct node *root, struct hashmap **mappings)
                             (data0->number);
                     }
                 }
+            } else {
+                printf("Undefined Operation: Multiplication 1. Operand a Vector\n");
+                free(data0);
+                free(data1);
+                abort = 1;
+                break;
             }
             stack_push(&stack, data2);
             free(data0);
@@ -171,11 +198,15 @@ void ast_eval(struct node *root, struct hashmap **mappings)
             free(data0);
             break;
         }
+        if (abort){
+            break;
+        }
     }
+
 
     while ((data0 = stack_pop(&stack))) {
         free(data0);
     }
 
-    free(it);
+    tree_iterator_free(it);
 }
